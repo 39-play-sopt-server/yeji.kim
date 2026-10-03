@@ -50,7 +50,7 @@ public class Main {
                         Post currentPost = posts.get(i);
 
                         System.out.println(
-                                (i + 1) + ". " + currentPost.title
+                                (i + 1) + ". " + currentPost.getTitle()
                         );
                     }
                     break;
@@ -73,8 +73,8 @@ public class Main {
                     Post readPost = posts.get(readIndex);
 
                     System.out.println("\n=== 게시글 ===");
-                    System.out.println("제목: " + readPost.title);
-                    System.out.println("내용: " + readPost.content);
+                    System.out.println("제목: " + readPost.getTitle());
+                    System.out.println("내용: " + readPost.getContent());
                     break;
 
                 case 4:
@@ -100,8 +100,8 @@ public class Main {
                     System.out.print("새로운 내용: ");
                     String newContent = scanner.nextLine();
 
-                    updatePost.title = newTitle;
-                    updatePost.content = newContent;
+                    updatePost.updateTitle(newTitle);
+                    updatePost.updateContent(newContent);
 
                     System.out.println("게시글이 수정되었습니다.");
                     break;
