@@ -1,4 +1,7 @@
-package org.sopt.post;
+package org.sopt.post.controller;
+
+import org.sopt.post.domain.Post;
+import org.sopt.post.client.PostView;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,6 @@
-package org.sopt;
+package org.sopt.post.client;
 
-import org.sopt.post.PostController;
-import org.sopt.post.PostView;
+import org.sopt.post.controller.PostController;
 
 public class Main {
 

@@ -1,4 +1,4 @@
-package org.sopt.post;
+package org.sopt.post.domain;
 
 public class Post {
     private String title;

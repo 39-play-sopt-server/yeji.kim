@@ -1,4 +1,6 @@
-package org.sopt.post;
+package org.sopt.post.client;
+
+import org.sopt.post.domain.Post;
 
 import java.util.Scanner;
 
