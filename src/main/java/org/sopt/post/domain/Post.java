@@ -1,12 +1,31 @@
 package org.sopt.post.domain;
 
 public class Post {
-    private String title;
-    private String content;
+    Long id;
+    String title;
+    String content;
+    Category category;
+    String createdAt;
+    String author;
 
-    public Post(String title, String content) {
+    public Post(
+            Long id,
+            String title,
+            String content,
+            Category category,
+            String createdAt,
+            String author
+    ) {
+        this.id = id;
         this.title = title;
         this.content = content;
+        this.category = category;
+        this.createdAt = createdAt;
+        this.author = author;
+    }
+
+    public Long getId() {
+        return this.id;
     }
 
     public String getTitle() {
