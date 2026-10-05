@@ -73,7 +73,7 @@ public class PostService {
         post.updateTitle(title);
         post.updateContent(content);
 
-        postRepository.save(post);
+        postRepository.updatePost(post);
     }
 
     public void deletePost(Long id) {
