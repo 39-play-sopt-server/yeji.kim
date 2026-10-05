@@ -1,7 +1,6 @@
 package org.sopt.post.client;
 
 import org.sopt.post.domain.Category;
-import org.sopt.post.domain.Post;
 import org.sopt.post.dto.response.PostResponse;
 
 import java.util.Scanner;
@@ -36,7 +35,7 @@ public class PostView {
 
     public Category readCategory() {
         System.out.print("카테고리 선택(HOT, FREE, SECRET): ");
-        String input =  scanner.nextLine();
+        String input = scanner.nextLine();
         return Category.valueOf(input);
     }
 
