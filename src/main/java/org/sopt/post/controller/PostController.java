@@ -1,6 +1,7 @@
 package org.sopt.post.controller;
 
-import org.sopt.post.domain.Category;
+import org.sopt.post.dto.request.CreatePostRequest;
+import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
 
@@ -15,13 +16,8 @@ public class PostController {
         this.postService = postService;
     }
 
-    public void createPost(
-            String title,
-            String content,
-            Category category,
-            String author
-    ) {
-        postService.createPost(title, content, category, author);
+    public void createPost(CreatePostRequest request) {
+        postService.createPost(request);
     }
 
     public List<PostResponse> readPosts() {
@@ -32,8 +28,8 @@ public class PostController {
         return postService.readPost(id);
     }
 
-    public void updatePost(Long id, String title, String content) {
-        postService.updatePost(id, title, content);
+    public void updatePost(UpdatePostRequest request) {
+        postService.updatePost(request);
     }
 
     public void deletePost(Long id) {

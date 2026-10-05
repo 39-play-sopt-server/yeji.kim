@@ -2,6 +2,8 @@ package org.sopt.post.service;
 
 import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
+import org.sopt.post.dto.request.CreatePostRequest;
+import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.repository.PostRepository;
@@ -25,16 +27,18 @@ public class PostService {
 
     private long nextId = 1;
 
-    public void createPost(
-            String title,
-            String content,
-            Category category,
-            String author
-    ) {
-        postValidator.validate(title, content);
+    public void createPost(CreatePostRequest request) {
+        postValidator.validate(request.title(), request.content());
 
         String createdAt = LocalDateTime.now().toString();
-        Post post = new Post(nextId, title, content, category, createdAt, author);
+        Post post = new Post(
+                nextId,
+                request.title(),
+                request.content(),
+                request.category(),
+                createdAt,
+                request.author()
+        );
         nextId += 1;
 
         postRepository.save(post);
@@ -62,16 +66,16 @@ public class PostService {
         return new PostResponse(post);
     }
 
-    public void updatePost(Long id, String title, String content) {
-        Post post = postRepository.findById(id);
-        postValidator.validate(title, content);
+    public void updatePost(UpdatePostRequest request) {
+        Post post = postRepository.findById(request.id());
+        postValidator.validate(request.title(), request.content());
 
         if (post == null) {
             throw new PostNotFoundException("게시글이 존재하지 않습니다.");
         }
 
-        post.updateTitle(title);
-        post.updateContent(content);
+        post.updateTitle(request.title());
+        post.updateContent(request.content());
 
         postRepository.updatePost(post);
     }

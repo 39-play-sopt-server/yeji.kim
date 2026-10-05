@@ -2,6 +2,8 @@ package org.sopt.post.client;
 
 import org.sopt.post.controller.PostController;
 import org.sopt.post.domain.Category;
+import org.sopt.post.dto.request.CreatePostRequest;
+import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
@@ -32,7 +34,9 @@ public class Main {
                         Category category = view.readCategory();
                         String author = view.readAuthor();
 
-                        controller.createPost(title, content, category, author);
+                        CreatePostRequest request = new CreatePostRequest(title, content, category, author);
+
+                        controller.createPost(request);
                     }
                     case 2 -> {
                         List<PostResponse> posts = controller.readPosts();
@@ -53,7 +57,9 @@ public class Main {
                         long id = view.readPostNumber("수정할 게시글 번호: ");
                         String newTitle = view.readTitle();
                         String newContent = view.readContent();
-                        controller.updatePost(id, newTitle, newContent);
+
+                        UpdatePostRequest request = new UpdatePostRequest(id, newTitle, newContent);
+                        controller.updatePost(request);
                         view.printMessage("게시글이 수정되었습니다.");
                     }
                     case 5 -> {
