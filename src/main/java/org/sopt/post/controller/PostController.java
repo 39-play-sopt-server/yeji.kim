@@ -4,6 +4,7 @@ import org.sopt.post.client.PostView;
 import org.sopt.post.domain.Category;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
+import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.service.PostService;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class PostController {
                     }
                     default -> view.printMessage("잘못된 입력입니다.");
                 }
-            } catch (PostNotFoundException e) {
+            } catch (PostNotFoundException | PostValidationException e) {
                 view.printMessage(e.getMessage());
             }
         }
