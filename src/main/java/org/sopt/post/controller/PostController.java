@@ -3,6 +3,7 @@ package org.sopt.post.controller;
 import org.sopt.post.client.PostView;
 import org.sopt.post.domain.Category;
 import org.sopt.post.dto.response.PostResponse;
+import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.service.PostService;
 
 import java.util.List;
@@ -23,17 +24,21 @@ public class PostController {
         while (true) {
             view.printMenu();
             int command = view.readCommand();
-            switch (command) {
-                case 1 -> createPost();
-                case 2 -> readPosts();
-                case 3 -> readPost();
-                case 4 -> updatePost();
-                case 5 -> deletePost();
-                case 6 -> {
-                    view.printMessage("프로그램을 종료합니다.");
-                    return;
+            try {
+                switch (command) {
+                    case 1 -> createPost();
+                    case 2 -> readPosts();
+                    case 3 -> readPost();
+                    case 4 -> updatePost();
+                    case 5 -> deletePost();
+                    case 6 -> {
+                        view.printMessage("프로그램을 종료합니다.");
+                        return;
+                    }
+                    default -> view.printMessage("잘못된 입력입니다.");
                 }
-                default -> view.printMessage("잘못된 입력입니다.");
+            } catch (PostNotFoundException e) {
+                view.printMessage(e.getMessage());
             }
         }
     }

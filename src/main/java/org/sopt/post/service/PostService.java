@@ -3,6 +3,7 @@ package org.sopt.post.service;
 import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
 import org.sopt.post.dto.response.PostResponse;
+import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.repository.PostRepository;
 
 import java.time.LocalDateTime;
@@ -48,11 +49,19 @@ public class PostService {
     public PostResponse readPost(Long id) {
         Post post = postRepository.findById(id);
 
+        if (post == null) {
+            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+        }
+
         return new PostResponse(post);
     }
 
     public void updatePost(Long id, String title, String content) {
         Post post = postRepository.findById(id);
+
+        if (post == null) {
+            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+        }
 
         post.updateTitle(title);
         post.updateContent(content);
@@ -61,6 +70,12 @@ public class PostService {
     }
 
     public void deletePost(Long id) {
+        Post post = postRepository.findById(id);
+
+        if (post == null) {
+            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+        }
+
         postRepository.deletePost(id);
     }
 }
