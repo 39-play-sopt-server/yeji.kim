@@ -1,6 +1,8 @@
 package org.sopt.post.client;
 
+import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
+import org.sopt.post.dto.response.PostResponse;
 
 import java.util.Scanner;
 
@@ -32,15 +34,26 @@ public class PostView {
         return scanner.nextLine();
     }
 
+    public Category readCategory() {
+        System.out.print("카테고리 선택(HOT, FREE, SECRET): ");
+        String input =  scanner.nextLine();
+        return Category.valueOf(input);
+    }
+
+    public String readAuthor() {
+        System.out.print("저자: ");
+        return scanner.nextLine();
+    }
+
     public int readPostNumber(String message) {
         System.out.print(message);
         return Integer.parseInt(scanner.nextLine());
     }
 
-    public void printPost(Post post) {
+    public void printPost(PostResponse post) {
         System.out.println("\n=== 게시글 ===");
-        System.out.println("제목: " + post.getTitle());
-        System.out.println("내용: " + post.getContent());
+        System.out.println("제목: " + post.title());
+        System.out.println("내용: " + post.content());
     }
 
     public void printMessage(String message) {

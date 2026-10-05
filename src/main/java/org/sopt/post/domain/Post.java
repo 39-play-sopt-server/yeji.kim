@@ -36,6 +36,18 @@ public class Post {
         return this.content;
     }
 
+    public Category getCategory() {
+        return this.category;
+    }
+
+    public String getCreatedAt() {
+        return this.createdAt;
+    }
+
+    public String getAuthor() {
+        return this.author;
+    }
+
     public void updateTitle(String title) {
         this.title = title;
     }
