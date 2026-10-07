@@ -6,6 +6,7 @@ import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.repository.MemoryPostRepository;
+import org.sopt.post.repository.PostRepository;
 import org.sopt.post.service.PostService;
 import org.sopt.post.validator.PostValidator;
 
@@ -15,9 +16,9 @@ public class Main {
 
     public static void main(String[] args) {
         PostView view = new PostView();
-        MemoryPostRepository memoryPostRepository = new MemoryPostRepository();
+        PostRepository postRepository = new MemoryPostRepository();
         PostValidator postValidator = new PostValidator();
-        PostService postService = new PostService(memoryPostRepository, postValidator);
+        PostService postService = new PostService(postRepository, postValidator);
         PostController controller = new PostController(postService);
 
         while (true) {
