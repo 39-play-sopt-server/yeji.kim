@@ -1,12 +1,14 @@
 package org.sopt.post.domain;
 
+import org.sopt.post.domain.validator.PostValidator;
+
 public class Post {
-    Long id;
-    String title;
-    String content;
-    Category category;
-    String createdAt;
-    String author;
+    private final Long id;
+    private String title;
+    private String content;
+    private final Category category;
+    private final String createdAt;
+    private final String author;
 
     public Post(
             Long id,
@@ -16,6 +18,7 @@ public class Post {
             String createdAt,
             String author
     ) {
+        PostValidator.validate(title, content);
         this.id = id;
         this.title = title;
         this.content = content;
@@ -48,11 +51,10 @@ public class Post {
         return this.author;
     }
 
-    public void updateTitle(String title) {
-        this.title = title;
-    }
+    public void update(String title, String content) {
+        PostValidator.validate(title, content);
 
-    public void updateContent(String content) {
+        this.title = title;
         this.content = content;
     }
 }

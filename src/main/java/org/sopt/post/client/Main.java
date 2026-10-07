@@ -8,7 +8,6 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.repository.MemoryPostRepository;
 import org.sopt.post.repository.PostRepository;
 import org.sopt.post.service.PostService;
-import org.sopt.post.validator.PostValidator;
 
 import java.util.List;
 
@@ -17,8 +16,7 @@ public class Main {
     public static void main(String[] args) {
         PostView view = new PostView();
         PostRepository postRepository = new MemoryPostRepository();
-        PostValidator postValidator = new PostValidator();
-        PostService postService = new PostService(postRepository, postValidator);
+        PostService postService = new PostService(postRepository);
         PostController controller = new PostController(postService);
 
         while (true) {

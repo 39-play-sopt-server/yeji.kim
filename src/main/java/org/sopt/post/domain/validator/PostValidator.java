@@ -1,10 +1,10 @@
-package org.sopt.post.validator;
+package org.sopt.post.domain.validator;
 
 import org.sopt.post.code.PostErrorCode;
 import org.sopt.post.exception.PostValidationException;
 
 public class PostValidator {
-    public void validate(String title, String content) {
+    public static void validate(String title, String content) {
         if (title.isBlank()) {
             throw new PostValidationException(PostErrorCode.POST_TITLE_EMPTY);
         }

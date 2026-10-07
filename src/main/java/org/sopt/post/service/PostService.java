@@ -9,7 +9,6 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
-import org.sopt.post.validator.PostValidator;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -17,20 +16,16 @@ import java.util.List;
 
 public class PostService {
     private final PostRepository postRepository;
-    private final PostValidator postValidator;
 
     public PostService(
-            PostRepository postRepository,
-            PostValidator postValidator
+            PostRepository postRepository
     ) {
         this.postRepository = postRepository;
-        this.postValidator = postValidator;
     }
 
     private long nextId = 1;
 
     public void createPost(CreatePostRequest request) {
-        postValidator.validate(request.title(), request.content());
 
         String createdAt = LocalDateTime.now().toString();
         Category category;
@@ -76,14 +71,12 @@ public class PostService {
 
     public void updatePost(UpdatePostRequest request) {
         Post post = postRepository.findById(request.id());
-        postValidator.validate(request.title(), request.content());
 
         if (post == null) {
             throw new PostNotFoundException();
         }
 
-        post.updateTitle(request.title());
-        post.updateContent(request.content());
+        post.update(request.title(), request.content());
 
         postRepository.updatePost(post);
     }
