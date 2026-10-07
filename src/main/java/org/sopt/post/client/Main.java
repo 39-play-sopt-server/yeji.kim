@@ -2,7 +2,6 @@ package org.sopt.post.client;
 
 import org.sopt.global.response.ApiResponse;
 import org.sopt.post.controller.PostController;
-import org.sopt.post.domain.Category;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
@@ -29,7 +28,7 @@ public class Main {
                 case 1 -> {
                     String title = view.readTitle();
                     String content = view.readContent();
-                    Category category = view.readCategory();
+                    String category = view.readCategory();
                     String author = view.readAuthor();
 
                     CreatePostRequest request = new CreatePostRequest(title, content, category, author);
@@ -81,7 +80,6 @@ public class Main {
             if (command == 6) {
                 break;
             }
-
         }
     }
 }

@@ -1,10 +1,13 @@
 package org.sopt.post.service;
 
+import org.sopt.post.code.PostErrorCode;
+import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
+import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
 import org.sopt.post.validator.PostValidator;
 
@@ -30,11 +33,17 @@ public class PostService {
         postValidator.validate(request.title(), request.content());
 
         String createdAt = LocalDateTime.now().toString();
+        Category category;
+        try {
+            category = Category.valueOf(request.category());
+        } catch (IllegalArgumentException e) {
+            throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
+        }
         Post post = new Post(
                 nextId,
                 request.title(),
                 request.content(),
-                request.category(),
+                category,
                 createdAt,
                 request.author()
         );
