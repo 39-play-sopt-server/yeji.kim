@@ -1,7 +1,10 @@
 package org.sopt.post.exception;
 
-public class PostValidationException extends RuntimeException {
-    public PostValidationException(String message) {
-        super(message);
+import org.sopt.global.exception.BusinessException;
+import org.sopt.post.code.PostErrorCode;
+
+public class PostValidationException extends BusinessException {
+    public PostValidationException(PostErrorCode errorCode) {
+        super(errorCode.getMessage());
     }
 }

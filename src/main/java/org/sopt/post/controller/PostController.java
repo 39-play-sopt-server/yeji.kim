@@ -1,11 +1,10 @@
 package org.sopt.post.controller;
 
+import org.sopt.global.exception.BusinessException;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
-import org.sopt.post.exception.PostNotFoundException;
-import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.service.PostService;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class PostController {
         try {
             postService.createPost(request);
             return ApiResponse.success(null);
-        } catch (PostValidationException e) {
+        } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
         }
     }
@@ -35,7 +34,7 @@ public class PostController {
     public ApiResponse<PostResponse> readPost(Long id) {
         try {
             return ApiResponse.success(postService.readPost(id));
-        } catch (PostNotFoundException e) {
+        } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
         }
     }
@@ -44,7 +43,7 @@ public class PostController {
         try {
             postService.updatePost(request);
             return ApiResponse.success(null);
-        } catch (PostNotFoundException | PostValidationException e) {
+        } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
         }
     }
@@ -53,7 +52,7 @@ public class PostController {
         try {
             postService.deletePost(id);
             return ApiResponse.success(null);
-        } catch (PostNotFoundException e) {
+        } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
         }
     }

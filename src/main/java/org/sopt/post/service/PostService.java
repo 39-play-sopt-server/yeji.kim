@@ -59,7 +59,7 @@ public class PostService {
         Post post = postRepository.findById(id);
 
         if (post == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+            throw new PostNotFoundException();
         }
 
         return new PostResponse(post);
@@ -70,7 +70,7 @@ public class PostService {
         postValidator.validate(request.title(), request.content());
 
         if (post == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+            throw new PostNotFoundException();
         }
 
         post.updateTitle(request.title());
@@ -83,7 +83,7 @@ public class PostService {
         Post post = postRepository.findById(id);
 
         if (post == null) {
-            throw new PostNotFoundException("게시글이 존재하지 않습니다.");
+            throw new PostNotFoundException();
         }
 
         postRepository.deletePost(id);
