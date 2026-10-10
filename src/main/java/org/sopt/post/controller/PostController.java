@@ -23,7 +23,7 @@ public class PostController {
 
     @PostMapping
     public ApiResponse<Void> createPost(
-            @RequestParam CreatePostRequest request) {
+            @RequestBody CreatePostRequest request) {
         try {
             postService.createPost(request);
             return ApiResponse.success(null);
