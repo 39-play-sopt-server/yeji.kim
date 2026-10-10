@@ -6,11 +6,12 @@ import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/api/v1/posts")
 public class PostController {
     private final PostService postService;
 
@@ -20,7 +21,9 @@ public class PostController {
         this.postService = postService;
     }
 
-    public ApiResponse<Void> createPost(CreatePostRequest request) {
+    @PostMapping
+    public ApiResponse<Void> createPost(
+            @RequestParam CreatePostRequest request) {
         try {
             postService.createPost(request);
             return ApiResponse.success(null);
@@ -29,19 +32,27 @@ public class PostController {
         }
     }
 
-    public ApiResponse<List<PostResponse>> readPosts() {
+    @GetMapping
+    public ApiResponse<List<PostResponse>> readPosts(
+            @RequestParam(name = "page", defaultValue = "1") int page
+    ) {
         return ApiResponse.success(postService.readPosts());
     }
 
-    public ApiResponse<PostResponse> readPost(Long id) {
+    @GetMapping(path = "/{postId}")
+    public ApiResponse<PostResponse> readPost(
+            @PathVariable(name = "postId") Long postId
+    ) {
         try {
-            return ApiResponse.success(postService.readPost(id));
+            return ApiResponse.success(postService.readPost(postId));
         } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
         }
     }
 
-    public ApiResponse<Void> updatePost(UpdatePostRequest request) {
+    @PutMapping(path = "/{postId}")
+    public ApiResponse<Void> updatePost(
+            @RequestBody UpdatePostRequest request) {
         try {
             postService.updatePost(request);
             return ApiResponse.success(null);
@@ -50,9 +61,12 @@ public class PostController {
         }
     }
 
-    public ApiResponse<Void> deletePost(Long id) {
+    @DeleteMapping(path = "/{postId}")
+    public ApiResponse<Void> deletePost(
+            @PathVariable(name = "postId") Long postId
+    ) {
         try {
-            postService.deletePost(id);
+            postService.deletePost(postId);
             return ApiResponse.success(null);
         } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
