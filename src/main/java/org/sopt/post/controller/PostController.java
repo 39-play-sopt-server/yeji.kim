@@ -36,7 +36,11 @@ public class PostController {
     public ApiResponse<List<PostResponse>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        return ApiResponse.success(postService.readPosts());
+        try {
+            return ApiResponse.success(postService.readPosts(page));
+        } catch (BusinessException e) {
+            return ApiResponse.failure(e.getMessage());
+        }
     }
 
     @GetMapping(path = "/{postId}")

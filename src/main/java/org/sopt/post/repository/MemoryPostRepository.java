@@ -27,6 +27,18 @@ public class MemoryPostRepository implements PostRepository {
     }
 
     @Override
+    public List<Post> findPage(int offset, int limit) {
+        List<Post> sortedPosts = findAll();
+        sortedPosts.sort((a, b) -> b.getId().compareTo(a.getId()));
+
+        if (offset >= sortedPosts.size()) { return List.of(); }
+
+        int end = Math.min(offset + limit, sortedPosts.size());
+
+        return sortedPosts.subList(offset, end);
+    }
+
+    @Override
     public void updatePost(Post post) {
         posts.put(post.getId(), post);
     }
