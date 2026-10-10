@@ -1,11 +1,9 @@
 package org.sopt.post.repository;
 
 import org.sopt.post.domain.Post;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
 public interface PostRepository {
 
     void save(Post post);
