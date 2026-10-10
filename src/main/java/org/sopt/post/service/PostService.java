@@ -71,8 +71,8 @@ public class PostService {
         return new PostResponse(post);
     }
 
-    public void updatePost(UpdatePostRequest request) {
-        Post post = postRepository.findById(request.id());
+    public void updatePost(Long id, UpdatePostRequest request) {
+        Post post = postRepository.findById(id);
 
         if (post == null) {
             throw new PostNotFoundException();

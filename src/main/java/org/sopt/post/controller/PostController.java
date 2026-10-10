@@ -52,9 +52,10 @@ public class PostController {
 
     @PutMapping(path = "/{postId}")
     public ApiResponse<Void> updatePost(
-            @RequestBody UpdatePostRequest request) {
+            @RequestBody UpdatePostRequest request,
+            @PathVariable(name = "postId") Long postId) {
         try {
-            postService.updatePost(request);
+            postService.updatePost(postId, request);
             return ApiResponse.success(null);
         } catch (BusinessException e) {
             return ApiResponse.failure(e.getMessage());
