@@ -9,11 +9,13 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository postRepository;
 
