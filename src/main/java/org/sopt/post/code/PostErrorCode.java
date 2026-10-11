@@ -4,7 +4,8 @@ public enum PostErrorCode {
     POST_NOT_FOUND("게시글이 존재하지 않습니다."),
     POST_TITLE_EMPTY("제목은 비어 있을 수 없습니다."),
     POST_CONTENT_EMPTY("본문은 비어 있을 수 없습니다."),
-    POST_CATEGORY_INVALID("존재하지 않는 카테고리입니다.");
+    POST_CATEGORY_INVALID("존재하지 않는 카테고리입니다."),
+    POST_PAGE_INVALID("페이지 번호는 1 이상이어야 합니다.");
 
     private final String message;
 

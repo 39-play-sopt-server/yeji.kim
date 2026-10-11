@@ -12,6 +12,8 @@ public interface PostRepository {
 
     List<Post> findAll();
 
+    List<Post> findPage(int offset, int limit);
+
     void updatePost(Post post);
 
     void deletePost(Long id);

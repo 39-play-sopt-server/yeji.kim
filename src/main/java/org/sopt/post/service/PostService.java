@@ -9,11 +9,13 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class PostService {
     private final PostRepository postRepository;
 
@@ -47,9 +49,16 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public List<PostResponse> readPosts() {
+    public List<PostResponse> readPosts(int page) {
+        if (page < 1) {
+            throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
+        }
+
+        int limit = 10;
+        int offset = (page - 1) * limit;
+
         List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts = postRepository.findAll();
+        List<Post> posts = postRepository.findPage(offset, limit);
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);
@@ -69,8 +78,8 @@ public class PostService {
         return new PostResponse(post);
     }
 
-    public void updatePost(UpdatePostRequest request) {
-        Post post = postRepository.findById(request.id());
+    public void updatePost(Long id, UpdatePostRequest request) {
+        Post post = postRepository.findById(id);
 
         if (post == null) {
             throw new PostNotFoundException();
