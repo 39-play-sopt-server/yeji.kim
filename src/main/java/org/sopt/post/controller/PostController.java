@@ -6,6 +6,7 @@ import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,41 +23,41 @@ public class PostController {
     }
 
     @PostMapping
-    public ApiResponse<Void> createPost(
+    public ResponseEntity<ApiResponse<Void>> createPost(
             @RequestBody CreatePostRequest request
     ) {
         postService.createPost(request);
-        return ApiResponse.of(PostSuccessCode.POST_CREATED, null);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_CREATED, null);
     }
 
     @GetMapping
-    public ApiResponse<List<PostResponse>> readPosts(
+    public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        return ApiResponse.of(PostSuccessCode.POST_LIST_READ, postService.readPosts(page));
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIST_READ, postService.readPosts(page));
     }
 
     @GetMapping(path = "/{postId}")
-    public ApiResponse<PostResponse> readPost(
+    public ResponseEntity<ApiResponse<PostResponse>> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        return ApiResponse.of(PostSuccessCode.POST_READ, postService.readPost(postId));
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_READ, postService.readPost(postId));
     }
 
     @PutMapping(path = "/{postId}")
-    public ApiResponse<Void> updatePost(
+    public ResponseEntity<ApiResponse<Void>> updatePost(
             @RequestBody UpdatePostRequest request,
             @PathVariable(name = "postId") Long postId
     ) {
         postService.updatePost(postId, request);
-        return ApiResponse.of(PostSuccessCode.POST_UPDATED, null);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_UPDATED, null);
     }
 
     @DeleteMapping(path = "/{postId}")
-    public ApiResponse<Void> deletePost(
+    public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable(name = "postId") Long postId
     ) {
         postService.deletePost(postId);
-        return ApiResponse.of(PostSuccessCode.POST_DELETED,null);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_DELETED,null);
     }
 }
