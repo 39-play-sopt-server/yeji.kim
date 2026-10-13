@@ -34,9 +34,10 @@ public class PostController implements PostControllerDocs{
     @GetMapping
     @Override
     public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
-            @RequestParam(name = "page", defaultValue = "1") int page
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIST_READ, postService.readPosts(page));
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIST_READ, postService.readPosts(page, size));
     }
 
     @GetMapping(path = "/{postId}")

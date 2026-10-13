@@ -49,16 +49,19 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public List<PostResponse> readPosts(int page) {
+    public List<PostResponse> readPosts(int page, int size) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
         }
 
-        int limit = 10;
-        int offset = (page - 1) * limit;
+        if (size < 1) {
+            throw new PostValidationException(PostErrorCode.POST_SIZE_INVALID);
+        }
+
+        int offset = (page - 1) * size;
 
         List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts = postRepository.findPage(offset, limit);
+        List<Post> posts = postRepository.findPage(offset, size);
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);

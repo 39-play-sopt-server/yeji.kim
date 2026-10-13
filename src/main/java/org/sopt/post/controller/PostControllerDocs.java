@@ -29,7 +29,8 @@ public interface PostControllerDocs {
             description = "페이지 번호에 해당하는 게시글을 최신순으로 조회합니다. 페이지 번호는 1부터 시작합니다."
     )
     ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
-            @RequestParam(name = "page", defaultValue = "1") int page
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size
     );
 
     @Operation(
