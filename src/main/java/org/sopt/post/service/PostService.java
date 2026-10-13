@@ -74,7 +74,7 @@ public class PostService {
         if (post == null) {
             throw new PostNotFoundException();
         }
-
+        post.increaseViewCount();
         return new PostResponse(post);
     }
 

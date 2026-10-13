@@ -9,7 +9,8 @@ public record PostResponse(
         String content,
         Category category,
         String createdAt,
-        String author
+        String author,
+        long viewCount
 ) {
     public PostResponse(Post post) {
         this(
@@ -18,7 +19,8 @@ public record PostResponse(
                 post.getContent(),
                 post.getCategory(),
                 post.getCreatedAt(),
-                post.getAuthor()
+                post.getAuthor(),
+                post.getViewCount()
         );
     }
 }

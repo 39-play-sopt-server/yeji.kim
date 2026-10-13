@@ -9,6 +9,7 @@ public class Post {
     private final Category category;
     private final String createdAt;
     private final String author;
+    private long viewCount = 0;
 
     public Post(
             Long id,
@@ -56,5 +57,13 @@ public class Post {
 
         this.title = title;
         this.content = content;
+    }
+
+    public long getViewCount() {
+        return this.viewCount;
+    }
+
+    public void increaseViewCount() {
+        viewCount += 1;
     }
 }
