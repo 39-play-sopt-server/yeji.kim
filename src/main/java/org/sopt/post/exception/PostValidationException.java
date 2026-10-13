@@ -5,6 +5,6 @@ import org.sopt.post.code.PostErrorCode;
 
 public class PostValidationException extends BusinessException {
     public PostValidationException(PostErrorCode errorCode) {
-        super(errorCode.getMessage());
+        super(errorCode);
     }
 }

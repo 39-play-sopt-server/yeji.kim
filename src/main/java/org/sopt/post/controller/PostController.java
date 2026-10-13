@@ -1,6 +1,5 @@
 package org.sopt.post.controller;
 
-import org.sopt.global.exception.BusinessException;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
@@ -23,58 +22,40 @@ public class PostController {
 
     @PostMapping
     public ApiResponse<Void> createPost(
-            @RequestBody CreatePostRequest request) {
-        try {
-            postService.createPost(request);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+            @RequestBody CreatePostRequest request
+    ) {
+        postService.createPost(request);
+        return ApiResponse.success(null);
     }
 
     @GetMapping
     public ApiResponse<List<PostResponse>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page
     ) {
-        try {
-            return ApiResponse.success(postService.readPosts(page));
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        return ApiResponse.success(postService.readPosts(page));
     }
 
     @GetMapping(path = "/{postId}")
     public ApiResponse<PostResponse> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        try {
-            return ApiResponse.success(postService.readPost(postId));
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        return ApiResponse.success(postService.readPost(postId));
     }
 
     @PutMapping(path = "/{postId}")
     public ApiResponse<Void> updatePost(
             @RequestBody UpdatePostRequest request,
-            @PathVariable(name = "postId") Long postId) {
-        try {
-            postService.updatePost(postId, request);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+            @PathVariable(name = "postId") Long postId
+    ) {
+        postService.updatePost(postId, request);
+        return ApiResponse.success(null);
     }
 
     @DeleteMapping(path = "/{postId}")
     public ApiResponse<Void> deletePost(
             @PathVariable(name = "postId") Long postId
     ) {
-        try {
-            postService.deletePost(postId);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        postService.deletePost(postId);
+        return ApiResponse.success(null);
     }
 }
