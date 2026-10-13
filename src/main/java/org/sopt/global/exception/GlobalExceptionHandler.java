@@ -9,6 +9,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ApiResponse<Void> handleBusinessException(BusinessException e) {
-        return ApiResponse.of(e.getErrorCode());
+        return ApiResponse.of(e.getErrorCode(), null);
     }
 }
