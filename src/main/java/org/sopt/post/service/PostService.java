@@ -49,7 +49,7 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public List<PostResponse> readPosts(int page, int size) {
+    public List<PostResponse> readPosts(int page, int size, String category) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
         }
@@ -59,9 +59,18 @@ public class PostService {
         }
 
         int offset = (page - 1) * size;
+        Category selectedCategory = null;
+
+        if (category != null) {
+            try {
+                selectedCategory = Category.valueOf(category);
+            } catch (IllegalArgumentException e) {
+                throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
+            }
+        }
 
         List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts = postRepository.findPage(offset, size);
+        List<Post> posts = postRepository.findPage(offset, size, selectedCategory);
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);

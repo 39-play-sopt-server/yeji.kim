@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
-public class PostController implements PostControllerDocs{
+public class PostController implements PostControllerDocs {
     private final PostService postService;
 
     public PostController(
@@ -35,9 +35,13 @@ public class PostController implements PostControllerDocs{
     @Override
     public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "category", required = false) String category
     ) {
-        return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIST_READ, postService.readPosts(page, size));
+        return ApiResponse.toResponseEntity(
+                PostSuccessCode.POST_LIST_READ,
+                postService.readPosts(page, size, category)
+        );
     }
 
     @GetMapping(path = "/{postId}")
