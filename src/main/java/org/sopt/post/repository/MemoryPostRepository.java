@@ -5,12 +5,12 @@ import org.sopt.post.domain.Post;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class MemoryPostRepository implements PostRepository {
-    private final HashMap<Long, Post> posts = new HashMap<>();
+    private final ConcurrentHashMap<Long, Post> posts = new ConcurrentHashMap<>();
 
     @Override
     public void save(Post post) {

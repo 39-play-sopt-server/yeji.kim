@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class PostService {
@@ -25,7 +26,7 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    private long nextId = 1;
+    private final AtomicLong nextId = new AtomicLong(1);
 
     public void createPost(CreatePostRequest request) {
 
@@ -37,14 +38,13 @@ public class PostService {
             throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
         }
         Post post = new Post(
-                nextId,
+                nextId.getAndIncrement(),
                 request.title(),
                 request.content(),
                 category,
                 createdAt,
                 request.author()
         );
-        nextId += 1;
 
         postRepository.save(post);
     }

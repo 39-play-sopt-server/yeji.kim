@@ -2,6 +2,8 @@ package org.sopt.post.domain;
 
 import org.sopt.post.domain.validator.PostValidator;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class Post {
     private final Long id;
     private String title;
@@ -9,7 +11,7 @@ public class Post {
     private final Category category;
     private final String createdAt;
     private final String author;
-    private long viewCount = 0;
+    private final AtomicLong viewCount = new AtomicLong(0);
 
     public Post(
             Long id,
@@ -60,10 +62,10 @@ public class Post {
     }
 
     public long getViewCount() {
-        return this.viewCount;
+        return viewCount.get();
     }
 
     public void increaseViewCount() {
-        viewCount += 1;
+        viewCount.incrementAndGet();
     }
 }
