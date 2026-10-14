@@ -28,7 +28,7 @@ public class PostService {
 
     private final AtomicLong nextId = new AtomicLong(1);
 
-    public void createPost(CreatePostRequest request) {
+    public synchronized void createPost(CreatePostRequest request) {
 
         String createdAt = LocalDateTime.now().toString();
         Category category;
@@ -49,7 +49,7 @@ public class PostService {
         postRepository.save(post);
     }
 
-    public List<PostResponse> readPosts(int page, int size, String category) {
+    public synchronized List<PostResponse> readPosts(int page, int size, String category) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
         }
@@ -80,7 +80,7 @@ public class PostService {
         return responses;
     }
 
-    public PostResponse readPost(Long id) {
+    public synchronized PostResponse readPost(Long id) {
         Post post = postRepository.findById(id);
 
         if (post == null) {
@@ -90,7 +90,7 @@ public class PostService {
         return new PostResponse(post);
     }
 
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public synchronized void updatePost(Long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id);
 
         if (post == null) {
@@ -102,7 +102,7 @@ public class PostService {
         postRepository.updatePost(post);
     }
 
-    public void deletePost(Long id) {
+    public synchronized void deletePost(Long id) {
         Post post = postRepository.findById(id);
 
         if (post == null) {
