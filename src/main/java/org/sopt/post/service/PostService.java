@@ -10,11 +10,11 @@ import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class PostService {
@@ -25,8 +25,6 @@ public class PostService {
     ) {
         this.postRepository = postRepository;
     }
-
-    private final AtomicLong nextId = new AtomicLong(1);
 
     public synchronized void createPost(CreatePostRequest request) {
 
@@ -80,34 +78,25 @@ public class PostService {
     }
 
     public synchronized PostResponse readPost(Long id) {
-        Post post = postRepository.findById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFoundException::new);
 
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
-        post.increaseViewCount();
         return new PostResponse(post);
     }
 
+    @Transactional
     public synchronized void updatePost(Long id, UpdatePostRequest request) {
-        Post post = postRepository.findById(id);
-
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFoundException::new);
 
         post.update(request.title(), request.content());
-
-        postRepository.updatePost(post);
     }
 
+    @Transactional
     public synchronized void deletePost(Long id) {
-        Post post = postRepository.findById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFoundException::new);
 
-        if (post == null) {
-            throw new PostNotFoundException();
-        }
-
-        postRepository.deletePost(id);
+        postRepository.delete(post);
     }
 }

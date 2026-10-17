@@ -1,26 +1,29 @@
 package org.sopt.post.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import org.sopt.post.domain.validator.PostValidator;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @Entity
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String title;
-    private String content;
-    private Category category;
-    private String createdAt;
-    private String author;
-    private final AtomicLong viewCount = new AtomicLong(0);
 
-    protected Post() {}
+    private String title;
+
+    private String content;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;
+
+    private String createdAt;
+
+    private String author;
+
+    private long viewCount = 0;
+
+    protected Post() {
+    }
 
     public Post(
             String title,
@@ -69,10 +72,10 @@ public class Post {
     }
 
     public long getViewCount() {
-        return viewCount.get();
+        return viewCount;
     }
 
     public void increaseViewCount() {
-        viewCount.incrementAndGet();
+        viewCount += 1;
     }
 }
