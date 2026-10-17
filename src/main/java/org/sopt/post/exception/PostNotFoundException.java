@@ -5,6 +5,6 @@ import org.sopt.post.code.PostErrorCode;
 
 public class PostNotFoundException extends BusinessException {
     public PostNotFoundException() {
-        super(PostErrorCode.POST_NOT_FOUND.getMessage());
+        super(PostErrorCode.POST_NOT_FOUND);
     }
 }

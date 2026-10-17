@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class PostService {
@@ -25,9 +26,9 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    private long nextId = 1;
+    private final AtomicLong nextId = new AtomicLong(1);
 
-    public void createPost(CreatePostRequest request) {
+    public synchronized void createPost(CreatePostRequest request) {
 
         String createdAt = LocalDateTime.now().toString();
         Category category;
@@ -37,28 +38,39 @@ public class PostService {
             throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
         }
         Post post = new Post(
-                nextId,
+                nextId.getAndIncrement(),
                 request.title(),
                 request.content(),
                 category,
                 createdAt,
                 request.author()
         );
-        nextId += 1;
 
         postRepository.save(post);
     }
 
-    public List<PostResponse> readPosts(int page) {
+    public synchronized List<PostResponse> readPosts(int page, int size, String category) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
         }
 
-        int limit = 10;
-        int offset = (page - 1) * limit;
+        if (size < 1) {
+            throw new PostValidationException(PostErrorCode.POST_SIZE_INVALID);
+        }
+
+        int offset = (page - 1) * size;
+        Category selectedCategory = null;
+
+        if (category != null) {
+            try {
+                selectedCategory = Category.valueOf(category);
+            } catch (IllegalArgumentException e) {
+                throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
+            }
+        }
 
         List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts = postRepository.findPage(offset, limit);
+        List<Post> posts = postRepository.findPage(offset, size, selectedCategory);
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);
@@ -68,17 +80,17 @@ public class PostService {
         return responses;
     }
 
-    public PostResponse readPost(Long id) {
+    public synchronized PostResponse readPost(Long id) {
         Post post = postRepository.findById(id);
 
         if (post == null) {
             throw new PostNotFoundException();
         }
-
+        post.increaseViewCount();
         return new PostResponse(post);
     }
 
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public synchronized void updatePost(Long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id);
 
         if (post == null) {
@@ -90,7 +102,7 @@ public class PostService {
         postRepository.updatePost(post);
     }
 
-    public void deletePost(Long id) {
+    public synchronized void deletePost(Long id) {
         Post post = postRepository.findById(id);
 
         if (post == null) {

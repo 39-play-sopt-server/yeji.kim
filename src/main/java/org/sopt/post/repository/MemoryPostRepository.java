@@ -1,15 +1,16 @@
 package org.sopt.post.repository;
 
+import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 public class MemoryPostRepository implements PostRepository {
-    private final HashMap<Long, Post> posts = new HashMap<>();
+    private final ConcurrentHashMap<Long, Post> posts = new ConcurrentHashMap<>();
 
     @Override
     public void save(Post post) {
@@ -27,8 +28,13 @@ public class MemoryPostRepository implements PostRepository {
     }
 
     @Override
-    public List<Post> findPage(int offset, int limit) {
+    public List<Post> findPage(int offset, int limit, Category category) {
         List<Post> sortedPosts = findAll();
+
+        if (category != null) {
+            sortedPosts.removeIf(post -> post.getCategory() != category);
+        }
+
         sortedPosts.sort((a, b) -> b.getId().compareTo(a.getId()));
 
         if (offset >= sortedPosts.size()) { return List.of(); }

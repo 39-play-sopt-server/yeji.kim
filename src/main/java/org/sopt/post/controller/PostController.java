@@ -1,18 +1,19 @@
 package org.sopt.post.controller;
 
-import org.sopt.global.exception.BusinessException;
 import org.sopt.global.response.ApiResponse;
+import org.sopt.post.code.PostSuccessCode;
 import org.sopt.post.dto.request.CreatePostRequest;
 import org.sopt.post.dto.request.UpdatePostRequest;
 import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.service.PostService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/posts")
-public class PostController {
+public class PostController implements PostControllerDocs {
     private final PostService postService;
 
     public PostController(
@@ -22,59 +23,51 @@ public class PostController {
     }
 
     @PostMapping
-    public ApiResponse<Void> createPost(
-            @RequestBody CreatePostRequest request) {
-        try {
-            postService.createPost(request);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+    @Override
+    public ResponseEntity<ApiResponse<Void>> createPost(
+            @RequestBody CreatePostRequest request
+    ) {
+        postService.createPost(request);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_CREATED, null);
     }
 
     @GetMapping
-    public ApiResponse<List<PostResponse>> readPosts(
-            @RequestParam(name = "page", defaultValue = "1") int page
+    @Override
+    public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
+            @RequestParam(name = "page", defaultValue = "1") int page,
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "category", required = false) String category
     ) {
-        try {
-            return ApiResponse.success(postService.readPosts(page));
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        return ApiResponse.toResponseEntity(
+                PostSuccessCode.POST_LIST_READ,
+                postService.readPosts(page, size, category)
+        );
     }
 
     @GetMapping(path = "/{postId}")
-    public ApiResponse<PostResponse> readPost(
+    @Override
+    public ResponseEntity<ApiResponse<PostResponse>> readPost(
             @PathVariable(name = "postId") Long postId
     ) {
-        try {
-            return ApiResponse.success(postService.readPost(postId));
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_READ, postService.readPost(postId));
     }
 
     @PutMapping(path = "/{postId}")
-    public ApiResponse<Void> updatePost(
+    @Override
+    public ResponseEntity<ApiResponse<Void>> updatePost(
             @RequestBody UpdatePostRequest request,
-            @PathVariable(name = "postId") Long postId) {
-        try {
-            postService.updatePost(postId, request);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+            @PathVariable(name = "postId") Long postId
+    ) {
+        postService.updatePost(postId, request);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_UPDATED, null);
     }
 
     @DeleteMapping(path = "/{postId}")
-    public ApiResponse<Void> deletePost(
+    @Override
+    public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable(name = "postId") Long postId
     ) {
-        try {
-            postService.deletePost(postId);
-            return ApiResponse.success(null);
-        } catch (BusinessException e) {
-            return ApiResponse.failure(e.getMessage());
-        }
+        postService.deletePost(postId);
+        return ApiResponse.toResponseEntity(PostSuccessCode.POST_DELETED, null);
     }
 }
