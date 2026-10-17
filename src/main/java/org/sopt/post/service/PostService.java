@@ -38,7 +38,6 @@ public class PostService {
             throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
         }
         Post post = new Post(
-                nextId.getAndIncrement(),
                 request.title(),
                 request.content(),
                 category,

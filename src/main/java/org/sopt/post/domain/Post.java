@@ -1,20 +1,28 @@
 package org.sopt.post.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import org.sopt.post.domain.validator.PostValidator;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+@Entity
 public class Post {
-    private final Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String title;
     private String content;
-    private final Category category;
-    private final String createdAt;
-    private final String author;
+    private Category category;
+    private String createdAt;
+    private String author;
     private final AtomicLong viewCount = new AtomicLong(0);
 
+    protected Post() {}
+
     public Post(
-            Long id,
             String title,
             String content,
             Category category,
@@ -22,7 +30,6 @@ public class Post {
             String author
     ) {
         PostValidator.validate(title, content);
-        this.id = id;
         this.title = title;
         this.content = content;
         this.category = category;
