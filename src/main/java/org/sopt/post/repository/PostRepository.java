@@ -2,20 +2,13 @@ package org.sopt.post.repository;
 
 import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-public interface PostRepository {
-
-    void save(Post post);
-
-    Post findById(Long id);
-
-    List<Post> findAll();
+@Repository
+public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findPage(int offset, int limit, Category category);
-
-    void updatePost(Post post);
-
-    void deletePost(Long id);
 }
