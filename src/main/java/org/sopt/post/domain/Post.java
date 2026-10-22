@@ -3,6 +3,8 @@ package org.sopt.post.domain;
 import jakarta.persistence.*;
 import org.sopt.post.domain.validator.PostValidator;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Post {
     @Id
@@ -16,7 +18,7 @@ public class Post {
     @Enumerated(EnumType.STRING)
     private Category category;
 
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     private String author;
 
@@ -29,7 +31,7 @@ public class Post {
             String title,
             String content,
             Category category,
-            String createdAt,
+            LocalDateTime createdAt,
             String author
     ) {
         PostValidator.validate(title, content);
@@ -56,7 +58,7 @@ public class Post {
         return this.category;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return this.createdAt;
     }
 

@@ -3,12 +3,14 @@ package org.sopt.post.dto.response;
 import org.sopt.post.domain.Category;
 import org.sopt.post.domain.Post;
 
+import java.time.LocalDateTime;
+
 public record PostResponse(
         Long id,
         String title,
         String content,
         Category category,
-        String createdAt,
+        LocalDateTime createdAt,
         String author,
         long viewCount
 ) {

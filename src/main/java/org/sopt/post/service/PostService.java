@@ -32,7 +32,7 @@ public class PostService {
 
     public synchronized void createPost(CreatePostRequest request) {
 
-        String createdAt = LocalDateTime.now().toString();
+        LocalDateTime createdAt = LocalDateTime.now();
         Category category = Category.from(request.category());
 
         Post post = new Post(
