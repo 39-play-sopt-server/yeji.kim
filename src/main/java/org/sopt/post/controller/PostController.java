@@ -1,5 +1,6 @@
 package org.sopt.post.controller;
 
+import jakarta.validation.Valid;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.post.code.PostSuccessCode;
 import org.sopt.post.dto.request.CreatePostRequest;
@@ -25,7 +26,7 @@ public class PostController implements PostControllerDocs {
     @PostMapping
     @Override
     public ResponseEntity<ApiResponse<Void>> createPost(
-            @RequestBody CreatePostRequest request
+            @Valid @RequestBody CreatePostRequest request
     ) {
         postService.createPost(request);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_CREATED, null);

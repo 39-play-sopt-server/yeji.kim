@@ -1,9 +1,11 @@
 package org.sopt.post.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+
 public record CreatePostRequest(
-        String title,
-        String content,
-        String category,
-        String author
+        @NotBlank String title,
+        @NotBlank String content,
+        @NotBlank String category,
+        @NotBlank String author
 ) {
 }
