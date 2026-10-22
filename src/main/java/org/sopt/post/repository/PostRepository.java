@@ -1,7 +1,7 @@
 package org.sopt.post.repository;
 
-import org.sopt.post.domain.Category;
-import org.sopt.post.domain.Post;
+import org.sopt.post.domain.entity.Category;
+import org.sopt.post.domain.entity.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

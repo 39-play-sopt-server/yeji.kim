@@ -1,4 +1,4 @@
-package org.sopt.post.domain;
+package org.sopt.post.domain.entity;
 
 import org.sopt.post.code.PostErrorCode;
 import org.sopt.post.exception.PostValidationException;

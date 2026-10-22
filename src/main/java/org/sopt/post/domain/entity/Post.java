@@ -1,4 +1,4 @@
-package org.sopt.post.domain;
+package org.sopt.post.domain.entity;
 
 import jakarta.persistence.*;
 import org.sopt.post.domain.validator.PostValidator;

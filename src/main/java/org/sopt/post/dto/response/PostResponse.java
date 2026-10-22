@@ -1,7 +1,7 @@
 package org.sopt.post.dto.response;
 
-import org.sopt.post.domain.Category;
-import org.sopt.post.domain.Post;
+import org.sopt.post.domain.entity.Category;
+import org.sopt.post.domain.entity.Post;
 
 import java.time.LocalDateTime;
 
