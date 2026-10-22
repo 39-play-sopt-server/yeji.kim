@@ -1,6 +1,7 @@
 package org.sopt.post.domain.entity;
 
 import jakarta.persistence.*;
+import org.sopt.member.domain.entity.Member;
 import org.sopt.post.domain.validator.PostValidator;
 
 import java.time.LocalDateTime;
@@ -20,7 +21,9 @@ public class Post {
 
     private LocalDateTime createdAt;
 
-    private String author;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "author_id", nullable = false)
+    private Member author;
 
     private long viewCount = 0;
 
@@ -32,7 +35,7 @@ public class Post {
             String content,
             Category category,
             LocalDateTime createdAt,
-            String author
+            Member author
     ) {
         PostValidator.validate(title, content);
         this.title = title;
@@ -62,7 +65,7 @@ public class Post {
         return this.createdAt;
     }
 
-    public String getAuthor() {
+    public Member getAuthor() {
         return this.author;
     }
 

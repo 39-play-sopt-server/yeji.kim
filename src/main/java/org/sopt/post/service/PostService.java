@@ -1,5 +1,8 @@
 package org.sopt.post.service;
 
+import org.sopt.member.domain.entity.Member;
+import org.sopt.member.exception.MemberNotFoundException;
+import org.sopt.member.repository.MemberRepository;
 import org.sopt.post.code.PostErrorCode;
 import org.sopt.post.domain.entity.Category;
 import org.sopt.post.domain.entity.Post;
@@ -22,30 +25,37 @@ import java.util.List;
 @Service
 public class PostService {
     private final PostRepository postRepository;
+    private final MemberRepository memberRepository;
     private static final int MAX_PAGE_SIZE = 100;
 
     public PostService(
-            PostRepository postRepository
+            PostRepository postRepository,
+            MemberRepository memberRepository
     ) {
         this.postRepository = postRepository;
+        this.memberRepository = memberRepository;
     }
 
+    @Transactional
     public synchronized void createPost(CreatePostRequest request) {
 
         LocalDateTime createdAt = LocalDateTime.now();
         Category category = Category.from(request.category());
+        Member member = memberRepository.findById(request.authorId())
+                .orElseThrow(MemberNotFoundException::new);
 
         Post post = new Post(
                 request.title(),
                 request.content(),
                 category,
                 createdAt,
-                request.author()
+                member
         );
 
         postRepository.save(post);
     }
 
+    @Transactional(readOnly = true)
     public synchronized List<PostResponse> readPosts(int page, int size, String category) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
@@ -74,6 +84,7 @@ public class PostService {
         return responses;
     }
 
+    @Transactional(readOnly = true)
     public synchronized PostResponse readPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
