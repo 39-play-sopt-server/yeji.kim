@@ -29,12 +29,8 @@ public class PostService {
     public synchronized void createPost(CreatePostRequest request) {
 
         String createdAt = LocalDateTime.now().toString();
-        Category category;
-        try {
-            category = Category.valueOf(request.category());
-        } catch (IllegalArgumentException e) {
-            throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
-        }
+        Category category = Category.from(request.category());
+
         Post post = new Post(
                 request.title(),
                 request.content(),
@@ -56,15 +52,8 @@ public class PostService {
         }
 
         int offset = (page - 1) * size;
-        Category selectedCategory = null;
-
-        if (category != null) {
-            try {
-                selectedCategory = Category.valueOf(category);
-            } catch (IllegalArgumentException e) {
-                throw new PostValidationException(PostErrorCode.POST_CATEGORY_INVALID);
-            }
-        }
+        Category selectedCategory =
+                category == null ? null : Category.from(category);
 
         List<PostResponse> responses = new ArrayList<>();
         List<Post> posts = postRepository.findPage(offset, size, selectedCategory);
