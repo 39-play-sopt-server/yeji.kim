@@ -43,7 +43,7 @@ public class PostController implements PostControllerDocs {
     ) {
         return ApiResponse.toResponseEntity(
                 PostSuccessCode.POST_LIST_READ,
-                postService.readPosts(page, size,authorId, category, title)
+                postService.readPosts(page, size, authorId, category, title)
         );
     }
 
