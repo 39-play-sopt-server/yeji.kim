@@ -1,13 +1,12 @@
 package org.sopt.post.domain.entity;
 
 import jakarta.persistence.*;
+import org.sopt.global.entity.BaseTimeEntity;
 import org.sopt.member.domain.entity.Member;
 import org.sopt.post.domain.validator.PostValidator;
 
-import java.time.LocalDateTime;
-
 @Entity
-public class Post {
+public class Post extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,8 +17,6 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private Category category;
-
-    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "author_id", nullable = false)
@@ -34,14 +31,12 @@ public class Post {
             String title,
             String content,
             Category category,
-            LocalDateTime createdAt,
             Member author
     ) {
         PostValidator.validate(title, content);
         this.title = title;
         this.content = content;
         this.category = category;
-        this.createdAt = createdAt;
         this.author = author;
     }
 
@@ -59,10 +54,6 @@ public class Post {
 
     public Category getCategory() {
         return this.category;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return this.createdAt;
     }
 
     public Member getAuthor() {

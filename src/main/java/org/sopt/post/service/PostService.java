@@ -18,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,6 @@ public class PostService {
     @Transactional
     public synchronized void createPost(CreatePostRequest request) {
 
-        LocalDateTime createdAt = LocalDateTime.now();
         Category category = Category.from(request.category());
         Member member = memberRepository.findById(request.authorId())
                 .orElseThrow(MemberNotFoundException::new);
@@ -48,7 +46,6 @@ public class PostService {
                 request.title(),
                 request.content(),
                 category,
-                createdAt,
                 member
         );
 
