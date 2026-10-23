@@ -53,7 +53,12 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized List<PostResponse> readPosts(int page, int size, String category) {
+    public synchronized List<PostResponse> readPosts(
+            int page,
+            int size,
+            String category,
+            String title
+    ) {
         if (page < 1) {
             throw new PostValidationException(PostErrorCode.POST_PAGE_INVALID);
         }
@@ -68,10 +73,21 @@ public class PostService {
                 category == null ? null : Category.from(category);
 
         List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts =
-                selectedCategory == null
-                        ? postRepository.findAll(pageable).getContent()
-                        : postRepository.findByCategory(selectedCategory, pageable);
+        List<Post> posts;
+
+        if (title != null && !title.isBlank()) {
+            if (selectedCategory == null) {
+                posts = postRepository.findByTitleContaining(title, pageable);
+            } else {
+                posts = postRepository.findByTitleContainingAndCategory(title, selectedCategory, pageable);
+            }
+        } else {
+            if (selectedCategory == null) {
+                posts = postRepository.findAll(pageable).getContent();
+            } else {
+                posts = postRepository.findByCategory(selectedCategory, pageable);
+            }
+        }
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);
