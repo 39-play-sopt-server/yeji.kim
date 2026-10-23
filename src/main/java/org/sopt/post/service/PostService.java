@@ -12,9 +12,11 @@ import org.sopt.post.dto.response.PostResponse;
 import org.sopt.post.exception.PostNotFoundException;
 import org.sopt.post.exception.PostValidationException;
 import org.sopt.post.repository.PostRepository;
+import org.sopt.post.repository.specification.PostSpecification;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,6 +58,7 @@ public class PostService {
     public synchronized List<PostResponse> readPosts(
             int page,
             int size,
+            Long authorId,
             String category,
             String title
     ) {
@@ -71,23 +74,24 @@ public class PostService {
 
         Category selectedCategory =
                 category == null ? null : Category.from(category);
+        Specification<Post> spec =
+                ((root, query, criteriaBuilder) ->
+                        criteriaBuilder.conjunction());
 
-        List<PostResponse> responses = new ArrayList<>();
-        List<Post> posts;
+        if (authorId != null) {
+            spec = spec.and(PostSpecification.hasAuthorId(authorId));
+        }
+
+        if (selectedCategory != null) {
+            spec = spec.and(PostSpecification.hasCategory(selectedCategory));
+        }
 
         if (title != null && !title.isBlank()) {
-            if (selectedCategory == null) {
-                posts = postRepository.findByTitleContaining(title, pageable);
-            } else {
-                posts = postRepository.findByTitleContainingAndCategory(title, selectedCategory, pageable);
-            }
-        } else {
-            if (selectedCategory == null) {
-                posts = postRepository.findAll(pageable).getContent();
-            } else {
-                posts = postRepository.findByCategory(selectedCategory, pageable);
-            }
+            spec = spec.and(PostSpecification.titleContains(title));
         }
+
+        List<PostResponse> responses = new ArrayList<>();
+        List<Post> posts = postRepository.findAll(spec, pageable).getContent();
 
         for (Post post : posts) {
             PostResponse response = new PostResponse(post);

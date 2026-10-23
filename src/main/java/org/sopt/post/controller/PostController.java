@@ -37,12 +37,13 @@ public class PostController implements PostControllerDocs {
     public ResponseEntity<ApiResponse<List<PostResponse>>> readPosts(
             @RequestParam(name = "page", defaultValue = "1") int page,
             @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "authorId", required = false) Long authorId,
             @RequestParam(name = "category", required = false) String category,
             @RequestParam(name = "title", required = false) String title
     ) {
         return ApiResponse.toResponseEntity(
                 PostSuccessCode.POST_LIST_READ,
-                postService.readPosts(page, size, category, title)
+                postService.readPosts(page, size,authorId, category, title)
         );
     }
 
