@@ -15,4 +15,6 @@ public interface PostLikeRepository extends JpaRepository<PostLike, Long> {
 
     // 좋아요 개수 조회
     long countByPostId(Long postId);
+
+    void deleteByPostId(Long postId);
 }
