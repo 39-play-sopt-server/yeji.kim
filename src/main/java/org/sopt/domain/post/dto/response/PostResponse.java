@@ -13,9 +13,10 @@ public record PostResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         String authorName,
-        long viewCount
+        long viewCount,
+        long likeCount
 ) {
-    public PostResponse(Post post) {
+    public PostResponse(Post post, long likeCount) {
         this(
                 post.getId(),
                 post.getTitle(),
@@ -24,7 +25,8 @@ public record PostResponse(
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
                 post.getAuthor().getName(),
-                post.getViewCount()
+                post.getViewCount(),
+                likeCount
         );
     }
 }
