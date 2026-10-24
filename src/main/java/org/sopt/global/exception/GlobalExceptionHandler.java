@@ -1,5 +1,7 @@
 package org.sopt.global.exception;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sopt.global.code.ErrorCode;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.stream.Collectors;
 
+@NullMarked
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger log =
@@ -30,7 +33,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+    protected @Nullable ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex,
             HttpHeaders headers,
             HttpStatusCode status,
@@ -46,7 +49,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleTypeMismatch(
+    protected @Nullable ResponseEntity<Object> handleTypeMismatch(
             TypeMismatchException ex,
             HttpHeaders headers,
             HttpStatusCode status,
@@ -62,7 +65,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+    protected @Nullable ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
             HttpHeaders headers,
             HttpStatusCode status,
