@@ -33,11 +33,6 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleUnexpectedException() {
-        return ApiResponse.toResponseEntity(ErrorCode.INTERNAL_SERVER_ERROR, null);
-    }
-
-    @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<Void>> handleUnexpectedException(Exception e) {
         log.error("예상하지 못한 서버 오류가 발생했습니다.", e);
 
