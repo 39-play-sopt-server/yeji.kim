@@ -15,8 +15,17 @@ public class PostSpecification {
                 cb.equal(root.get("category"), category);
     }
 
-    public static Specification<Post> titleContains(String title) {
+    public static Specification<Post> titleMatches(String title) {
+        // 검색 점수가 0보다 큰 게시글만 조회
         return (root, query, cb) ->
-                cb.like(root.get("title"), "%" + title + "%");
+                cb.greaterThan(
+                        cb.function(
+                                "match_against",
+                                Double.class,
+                                root.get("title"),
+                                cb.literal(title)
+                        ),
+                        0.0
+                );
     }
 }

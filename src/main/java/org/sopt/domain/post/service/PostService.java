@@ -87,7 +87,7 @@ public class PostService {
         }
 
         if (title != null && !title.isBlank()) {
-            spec = spec.and(PostSpecification.titleContains(title));
+            spec = spec.and(PostSpecification.titleMatches(title));
         }
 
         List<PostResponse> responses = new ArrayList<>();
