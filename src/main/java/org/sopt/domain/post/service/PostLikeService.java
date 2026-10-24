@@ -9,6 +9,7 @@ import org.sopt.domain.post.exception.PostNotFoundException;
 import org.sopt.domain.post.repository.PostLikeRepository;
 import org.sopt.domain.post.repository.PostRepository;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +34,10 @@ public class PostLikeService {
 
     @Transactional
     @Retryable(
-            includes = OptimisticLockingFailureException.class,
+            includes = {
+                    OptimisticLockingFailureException.class,
+                    PessimisticLockingFailureException.class
+            },
             maxRetries = 3,
             delay = 50
     )
@@ -57,7 +61,10 @@ public class PostLikeService {
 
     @Transactional
     @Retryable(
-            includes = OptimisticLockingFailureException.class,
+            includes = {
+                    OptimisticLockingFailureException.class,
+                    PessimisticLockingFailureException.class
+            },
             maxRetries = 3,
             delay = 50
     )
