@@ -43,12 +43,13 @@ public class PostLikeService {
         PostLike postLike = new PostLike(member, post);
 
         postLikeRepository.save(postLike);
+        post.increaseLikeCount();
     }
 
     @Transactional
     public void cancelPostLike(Long postId, Long memberId) {
         memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-        postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
 
         Optional<PostLike> postLike = postLikeRepository.findByMemberIdAndPostId(memberId, postId);
 
@@ -57,5 +58,6 @@ public class PostLikeService {
         }
 
         postLikeRepository.delete(postLike.get());
+        post.decreaseLikeCount();
     }
 }

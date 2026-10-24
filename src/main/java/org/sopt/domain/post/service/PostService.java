@@ -11,7 +11,6 @@ import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.PostResponse;
 import org.sopt.domain.post.exception.PostNotFoundException;
 import org.sopt.domain.post.exception.PostValidationException;
-import org.sopt.domain.post.repository.PostLikeRepository;
 import org.sopt.domain.post.repository.PostRepository;
 import org.sopt.domain.post.repository.specification.PostSpecification;
 import org.springframework.data.domain.PageRequest;
@@ -28,17 +27,14 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
-    private final PostLikeRepository postLikeRepository;
     private static final int MAX_PAGE_SIZE = 100;
 
     public PostService(
             PostRepository postRepository,
-            MemberRepository memberRepository,
-            PostLikeRepository postLikeRepository
+            MemberRepository memberRepository
     ) {
         this.postRepository = postRepository;
         this.memberRepository = memberRepository;
-        this.postLikeRepository = postLikeRepository;
     }
 
     @Transactional
@@ -98,8 +94,7 @@ public class PostService {
         List<Post> posts = postRepository.findAll(spec, pageable).getContent();
 
         for (Post post : posts) {
-            long likeCount = postLikeRepository.countByPostId(post.getId());
-            PostResponse response = new PostResponse(post, likeCount);
+            PostResponse response = new PostResponse(post, post.getLikeCount());
             responses.add(response);
         }
 
@@ -111,9 +106,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
 
-        long likeCount = postLikeRepository.countByPostId(id);
-
-        return new PostResponse(post, likeCount);
+        return new PostResponse(post, post.getLikeCount());
     }
 
     @Transactional

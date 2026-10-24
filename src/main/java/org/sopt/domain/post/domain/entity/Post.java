@@ -1,9 +1,9 @@
 package org.sopt.domain.post.domain.entity;
 
 import jakarta.persistence.*;
-import org.sopt.global.entity.BaseTimeEntity;
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.post.domain.validator.PostValidator;
+import org.sopt.global.entity.BaseTimeEntity;
 
 @Entity
 public class Post extends BaseTimeEntity {
@@ -23,6 +23,11 @@ public class Post extends BaseTimeEntity {
     private Member author;
 
     private long viewCount = 0;
+
+    private long likeCount = 0;
+
+    @Version
+    private Long version;
 
     protected Post() {
     }
@@ -73,5 +78,19 @@ public class Post extends BaseTimeEntity {
 
     public void increaseViewCount() {
         viewCount += 1;
+    }
+
+    public long getLikeCount() {
+        return this.likeCount;
+    }
+
+    public void increaseLikeCount() {
+        likeCount += 1;
+    }
+
+    public void decreaseLikeCount() {
+        if (likeCount > 0) {
+            likeCount -= 1;
+        }
     }
 }
