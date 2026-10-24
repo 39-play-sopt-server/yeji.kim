@@ -8,6 +8,8 @@ import org.sopt.domain.post.domain.entity.PostLike;
 import org.sopt.domain.post.exception.PostNotFoundException;
 import org.sopt.domain.post.repository.PostLikeRepository;
 import org.sopt.domain.post.repository.PostRepository;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,11 @@ public class PostLikeService {
     }
 
     @Transactional
+    @Retryable(
+            includes = OptimisticLockingFailureException.class,
+            maxRetries = 3,
+            delay = 50
+    )
     public void likePost(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
@@ -47,6 +54,11 @@ public class PostLikeService {
     }
 
     @Transactional
+    @Retryable(
+            includes = OptimisticLockingFailureException.class,
+            maxRetries = 3,
+            delay = 50
+    )
     public void cancelPostLike(Long postId, Long memberId) {
         memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
