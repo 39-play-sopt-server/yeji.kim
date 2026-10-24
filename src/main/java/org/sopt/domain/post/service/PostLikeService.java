@@ -49,8 +49,10 @@ public class PostLikeService {
 
         PostLike postLike = new PostLike(member, post);
 
-        postLikeRepository.save(postLike);
         post.increaseLikeCount();
+        // 변경 SQL을 DB에 실행 -> 저장이 실패하면 같은 트랜잭션이라 증가도 롤백 됨
+        postRepository.flush();
+        postLikeRepository.save(postLike);
     }
 
     @Transactional
@@ -68,8 +70,8 @@ public class PostLikeService {
         if (postLike.isEmpty()) {
             return;
         }
-
-        postLikeRepository.delete(postLike.get());
         post.decreaseLikeCount();
+        postRepository.flush();
+        postLikeRepository.delete(postLike.get());
     }
 }
