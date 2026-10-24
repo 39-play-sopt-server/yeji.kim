@@ -2,6 +2,7 @@ package org.sopt.domain.post.service;
 
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.exception.MemberNotFoundException;
+import org.sopt.domain.member.exception.MemberWithdrawnException;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.domain.post.code.PostErrorCode;
 import org.sopt.domain.post.domain.entity.Category;
@@ -47,6 +48,10 @@ public class PostService {
         Category category = Category.from(request.category());
         Member member = memberRepository.findById(request.authorId())
                 .orElseThrow(MemberNotFoundException::new);
+
+        if (member.isDeleted()) {
+            throw new MemberWithdrawnException();
+        }
 
         Post post = new Post(
                 request.title(),

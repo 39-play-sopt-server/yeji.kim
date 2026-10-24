@@ -13,6 +13,8 @@ public class Member {
 
     private String name;
 
+    private boolean deleted = false;
+
     protected Member() {
     }
 
@@ -26,5 +28,13 @@ public class Member {
 
     public String getName() {
         return this.name;
+    }
+
+    public void withdraw() {
+        this.deleted = true;
+    }
+
+    public boolean isDeleted() {
+        return this.deleted;
     }
 }

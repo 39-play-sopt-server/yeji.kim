@@ -28,6 +28,6 @@ public class MemberService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
-        memberRepository.delete(member);
+        member.withdraw();
     }
 }

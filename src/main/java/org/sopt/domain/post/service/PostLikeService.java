@@ -2,6 +2,7 @@ package org.sopt.domain.post.service;
 
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.exception.MemberNotFoundException;
+import org.sopt.domain.member.exception.MemberWithdrawnException;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.domain.post.domain.entity.Post;
 import org.sopt.domain.post.domain.entity.PostLike;
@@ -46,6 +47,10 @@ public class PostLikeService {
                 .orElseThrow(MemberNotFoundException::new);
         Post post = postRepository.findById(postId)
                 .orElseThrow(PostNotFoundException::new);
+
+        if (member.isDeleted()) {
+            throw new MemberWithdrawnException();
+        }
 
         if (postLikeRepository.existsByMemberIdAndPostId(memberId, postId)) {
             return;
