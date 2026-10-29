@@ -43,7 +43,7 @@ public class PostService {
     }
 
     @Transactional
-    public synchronized void createPost(CreatePostRequest request) {
+    public void createPost(CreatePostRequest request) {
 
         Category category = Category.from(request.category());
         Member member = memberRepository.findById(request.authorId())
@@ -64,7 +64,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized List<PostResponse> readPosts(
+    public List<PostResponse> readPosts(
             int page,
             int size,
             Long authorId,
@@ -111,7 +111,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public synchronized PostResponse readPost(Long id) {
+    public PostResponse readPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
 
@@ -119,7 +119,7 @@ public class PostService {
     }
 
     @Transactional
-    public synchronized void updatePost(Long id, UpdatePostRequest request) {
+    public void updatePost(Long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
 
@@ -127,7 +127,7 @@ public class PostService {
     }
 
     @Transactional
-    public synchronized void deletePost(Long id) {
+    public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
 
