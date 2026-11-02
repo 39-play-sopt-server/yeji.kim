@@ -82,7 +82,14 @@ public class PostService {
             throw new PostValidationException(PostErrorCode.POST_SIZE_INVALID);
         }
 
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(
+                page - 1,
+                size,
+                Sort.by(
+                        Sort.Order.desc("createdAt"),
+                        Sort.Order.desc("id")
+                        )
+        );
 
         Category selectedCategory =
                 category == null ? null : Category.from(category);
