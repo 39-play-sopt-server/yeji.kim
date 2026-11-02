@@ -113,11 +113,20 @@ public class PostService {
         return responses;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
+    @Retryable(
+            includes = {
+                    OptimisticLockingFailureException.class,
+                    PessimisticLockingFailureException.class
+            },
+            maxRetries = 3,
+            delay = 50
+    )
     public PostResponse readPost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
 
+        post.increaseViewCount();
         return new PostResponse(post, post.getLikeCount());
     }
 
