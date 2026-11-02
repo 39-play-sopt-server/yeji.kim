@@ -15,10 +15,13 @@ import org.sopt.domain.post.exception.PostValidationException;
 import org.sopt.domain.post.repository.PostLikeRepository;
 import org.sopt.domain.post.repository.PostRepository;
 import org.sopt.domain.post.repository.specification.PostSpecification;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -119,6 +122,14 @@ public class PostService {
     }
 
     @Transactional
+    @Retryable(
+            includes = {
+                    OptimisticLockingFailureException.class,
+                    PessimisticLockingFailureException.class
+            },
+            maxRetries = 3,
+            delay = 50
+    )
     public void updatePost(Long id, UpdatePostRequest request) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
@@ -127,6 +138,14 @@ public class PostService {
     }
 
     @Transactional
+    @Retryable(
+            includes = {
+                    OptimisticLockingFailureException.class,
+                    PessimisticLockingFailureException.class
+            },
+            maxRetries = 3,
+            delay = 50
+    )
     public void deletePost(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
