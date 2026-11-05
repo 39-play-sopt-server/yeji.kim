@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [main, feat/15/assignment4]
   workflow_dispatch:
 
 permissions:
