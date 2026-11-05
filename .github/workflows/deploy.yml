@@ -54,6 +54,7 @@ jobs:
           cd ~/assignment-deploy
           printf 'APP_IMAGE=%s\n' "$APP_IMAGE" > .env
           sudo -n docker compose -f docker-compose.prod.yml pull
+          sudo -n systemctl stop assignment nginx
           sudo -n docker compose -f docker-compose.prod.yml up -d
           sudo -n docker compose -f docker-compose.prod.yml restart nginx
 
