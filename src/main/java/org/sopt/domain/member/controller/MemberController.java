@@ -6,6 +6,7 @@ import org.sopt.domain.member.dto.request.CreateMemberRequest;
 import org.sopt.domain.member.service.MemberService;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -33,5 +34,13 @@ public class MemberController implements MemberControllerDocs {
     ) {
         memberService.deleteMember(memberId);
         return ApiResponse.toResponseEntity(MemberSuccessCode.MEMBER_DELETED, null);
+    }
+
+    @Override
+    @GetMapping("/me")
+    public ResponseEntity<Long> me(
+            @AuthenticationPrincipal Long memberId
+    ) {
+        return ResponseEntity.ok(memberId);
     }
 }
