@@ -16,7 +16,7 @@ public class MemberService {
     }
 
     public Long createMember(CreateMemberRequest request) {
-        Member member = new Member(request.name());
+        Member member = new Member(request.email(), request.password(), request.name());
 
         memberRepository.save(member);
 
