@@ -35,6 +35,14 @@ public class Member {
         return this.name;
     }
 
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
     public void withdraw() {
         this.deleted = true;
     }
