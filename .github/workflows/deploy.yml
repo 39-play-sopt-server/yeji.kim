@@ -1,0 +1,71 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main, feat/15/assignment4]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      HOST: ${{ secrets.EC2_HOST }}
+      USER: ${{ secrets.EC2_USER }}
+      APP_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/assignment-app:${{ github.sha }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.APP_IMAGE }}
+
+      - name: Deploy to EC2
+        env:
+          SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST_KEY: ${{ secrets.EC2_HOST_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/key
+          chmod 600 ~/.ssh/key
+          trap 'rm -f ~/.ssh/key' EXIT
+          printf '%s %s\n' "$HOST" "$HOST_KEY" > ~/.ssh/known_hosts
+
+          ssh -i ~/.ssh/key "$USER@$HOST" 'mkdir -p ~/assignment-deploy/nginx'
+          scp -i ~/.ssh/key docker-compose.prod.yml "$USER@$HOST:~/assignment-deploy/"
+          scp -i ~/.ssh/key nginx/prod.conf "$USER@$HOST:~/assignment-deploy/nginx/"
+
+          ssh -i ~/.ssh/key "$USER@$HOST" "APP_IMAGE='$APP_IMAGE' bash -se" <<'EOF'
+          cd ~/assignment-deploy
+          printf 'APP_IMAGE=%s\n' "$APP_IMAGE" > .env
+          sudo -n docker compose -f docker-compose.prod.yml pull
+          sudo -n systemctl stop assignment nginx
+          sudo -n docker compose -f docker-compose.prod.yml up -d
+          sudo -n docker compose -f docker-compose.prod.yml restart nginx
+
+          for i in $(seq 1 30); do
+            if curl -fsS --max-time 5 \
+              --resolve sopt-server-practice.p-e.kr:443:127.0.0.1 \
+              https://sopt-server-practice.p-e.kr/v3/api-docs > /dev/null; then
+              exit 0
+            fi
+            sleep 3
+          done
+          sudo -n docker compose -f docker-compose.prod.yml logs --tail 50
+          exit 1
+          EOF

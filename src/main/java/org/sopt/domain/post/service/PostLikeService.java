@@ -45,12 +45,13 @@ public class PostLikeService {
     public void likePost(Long postId, Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        Post post = postRepository.findById(postId)
-                .orElseThrow(PostNotFoundException::new);
 
         if (member.isDeleted()) {
             throw new MemberWithdrawnException();
         }
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFoundException::new);
 
         if (postLikeRepository.existsByMemberIdAndPostId(memberId, postId)) {
             return;
@@ -74,14 +75,23 @@ public class PostLikeService {
             delay = 50
     )
     public void cancelPostLike(Long postId, Long memberId) {
-        memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
-        Post post = postRepository.findById(postId).orElseThrow(PostNotFoundException::new);
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
 
-        Optional<PostLike> postLike = postLikeRepository.findByMemberIdAndPostId(memberId, postId);
+        if (member.isDeleted()) {
+            throw new MemberWithdrawnException();
+        }
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(PostNotFoundException::new);
+
+        Optional<PostLike> postLike = postLikeRepository
+                .findByMemberIdAndPostId(memberId, postId);
 
         if (postLike.isEmpty()) {
             return;
         }
+
         post.decreaseLikeCount();
         postRepository.flush();
         postLikeRepository.delete(postLike.get());

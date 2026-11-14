@@ -1,0 +1,17 @@
+services:
+  app:
+    image: assignment-app:local
+    build: .
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://host.docker.internal:3306/assignment"
+      SPRING_DATASOURCE_USERNAME: "root"
+      DB_PASSWORD: "${DB_PASSWORD}"
+
+  nginx:
+    image: nginx:stable
+    depends_on:
+      - app
+    ports:
+      - "127.0.0.1:8081:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
