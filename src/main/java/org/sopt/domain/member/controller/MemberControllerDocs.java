@@ -1,10 +1,12 @@
 package org.sopt.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.domain.member.dto.request.CreateMemberRequest;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -25,5 +27,14 @@ public interface MemberControllerDocs {
     )
     ResponseEntity<ApiResponse<Void>> deleteMember(
             @PathVariable(name = "memberId") Long memberId
+    );
+
+    @Operation(
+            summary = "내 회원 ID 조회",
+            description = "현재 인증된 회원의 ID를 반환합니다."
+    )
+    ResponseEntity<Long> me(
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
     );
 }
