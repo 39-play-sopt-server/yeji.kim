@@ -28,9 +28,9 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @Override
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteMember(
-            @PathVariable(name = "memberId") Long memberId
+            @AuthenticationPrincipal Long memberId
     ) {
         memberService.deleteMember(memberId);
         return ApiResponse.toResponseEntity(MemberSuccessCode.MEMBER_DELETED, null);
