@@ -3,10 +3,10 @@ package org.sopt.domain.post.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.sopt.global.response.ApiResponse;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.PostResponse;
+import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +26,7 @@ public interface PostControllerDocs {
             @RequestBody CreatePostRequest request,
             @Parameter(hidden = true)
             @AuthenticationPrincipal Long memberId
-            );
+    );
 
     @Operation(
             summary = "게시글 목록 조회",
@@ -54,7 +54,9 @@ public interface PostControllerDocs {
     )
     ResponseEntity<ApiResponse<Void>> updatePost(
             @RequestBody UpdatePostRequest request,
-            @PathVariable(name = "postId") Long postId
+            @PathVariable(name = "postId") Long postId,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
     );
 
     @Operation(
@@ -62,6 +64,8 @@ public interface PostControllerDocs {
             description = "게시글 번호에 해당하는 게시글을 삭제합니다."
     )
     ResponseEntity<ApiResponse<Void>> deletePost(
-            @PathVariable(name = "postId") Long postId
+            @PathVariable(name = "postId") Long postId,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
     );
 }
