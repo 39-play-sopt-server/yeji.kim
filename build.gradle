@@ -39,6 +39,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
+    // OAuth
+    implementation 'org.springframework.boot:spring-boot-starter-security-oauth2-client'
+
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation platform('org.junit:junit-bom:6.0.0')
