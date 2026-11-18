@@ -3,10 +3,12 @@ package org.sopt.domain.auth.service;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.code.AuthErrorCode;
+import org.sopt.domain.auth.domain.entity.AccessTokenBlacklist;
 import org.sopt.domain.auth.domain.entity.RefreshToken;
 import org.sopt.domain.auth.dto.AuthTokens;
 import org.sopt.domain.auth.exception.AuthValidationException;
 import org.sopt.domain.auth.exception.InvalidRefreshTokenException;
+import org.sopt.domain.auth.repository.AccessTokenBlacklistRepository;
 import org.sopt.domain.auth.repository.RefreshTokenRepository;
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.exception.MemberWithdrawnException;
@@ -30,6 +32,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 
     @Transactional
     public Long signup(String name, String email, String password) {
@@ -92,27 +95,25 @@ public class AuthService {
     }
 
     @Transactional
-    public void logout(String token) {
-        if (!StringUtils.hasText(token)) {
-            return;
-        }
-
+    public void logout(String accessToken, String refreshToken) {
         JwtTokenPayload payload;
 
         try {
-            payload = jwtProvider.getPayload(token, JwtTokenType.REFRESH);
+            payload = jwtProvider.getPayload(accessToken, JwtTokenType.ACCESS);
         } catch (JwtException | IllegalArgumentException e) {
-            return;
+            throw new AuthValidationException(AuthErrorCode.INVALID_ACCESS_TOKEN);
         }
 
-        refreshTokenRepository.findByTokenId(payload.tokenId())
-                .ifPresent(refreshToken -> {
-                    if (!refreshToken.getMemberId().equals(payload.memberId())) {
-                        throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
-                    }
+        memberRepository.findWithLockById(payload.memberId())
+                .orElseThrow(() -> new AuthValidationException(AuthErrorCode.INVALID_ACCESS_TOKEN));
 
-                    refreshTokenRepository.delete(refreshToken);
-                });
+        if (!accessTokenBlacklistRepository.existByTokenId(payload.tokenId())) {
+            accessTokenBlacklistRepository.save(
+                    new AccessTokenBlacklist(payload.tokenId(), payload.expiresAt())
+            );
+        }
+
+        revokeRefreshToken(refreshToken, payload.memberId());
     }
 
     private AuthTokens issueTokens(Long memberId) {
@@ -133,5 +134,32 @@ public class AuthService {
         );
 
         return new AuthTokens(accessToken, refreshToken);
+    }
+
+    private void revokeRefreshToken(String token, Long memberId) {
+        if (!StringUtils.hasText(token)) {
+            return;
+        }
+
+        JwtTokenPayload payload;
+
+        try {
+            payload = jwtProvider.getPayload(token, JwtTokenType.REFRESH);
+        } catch (JwtException | IllegalArgumentException e) {
+            return;
+        }
+
+        if (!payload.memberId().equals(memberId)) {
+            throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        refreshTokenRepository.findByTokenId(payload.tokenId())
+                .ifPresent(refreshToken -> {
+                    if (!refreshToken.getMemberId().equals(memberId)) {
+                        throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+                    }
+
+                    refreshTokenRepository.delete(refreshToken);
+                });
     }
 }
