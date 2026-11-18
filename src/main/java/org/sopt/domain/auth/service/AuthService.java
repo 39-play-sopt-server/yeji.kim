@@ -21,12 +21,12 @@ public class AuthService {
     }
 
     @Transactional
-    public Long signup(String email, String password) {
+    public Long signup(String name, String email, String password) {
         if (memberRepository.existsByEmail(email)) {
             throw new IllegalArgumentException("이미 가입된 이메일입니다.");
         }
 
-        Member member = new Member(email, password, passwordEncoder.encode(password));
+        Member member = new Member(name, email, passwordEncoder.encode(password));
         return memberRepository.save(member).getId();
     }
 

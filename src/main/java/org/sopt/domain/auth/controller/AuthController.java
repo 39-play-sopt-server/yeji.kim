@@ -17,15 +17,26 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public record SignupRequest(String email, String password) {}
-    public record LoginRequest(String email, String password) {}
-    public record LoginResponse(String accessToken) {}
+    public record SignupRequest(String name, String email, String password) {
+    }
+
+    public record LoginRequest(String email, String password) {
+    }
+
+    public record LoginResponse(String accessToken) {
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<Long> signup(
             @RequestBody SignupRequest request
     ) {
-        return ResponseEntity.ok(authService.signup(request.email(), request.password()));
+        return ResponseEntity.ok(
+                authService.signup(
+                        request.name(),
+                        request.email(),
+                        request.password()
+                )
+        );
     }
 
     @PostMapping("/login")
