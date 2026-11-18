@@ -46,10 +46,10 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(CreatePostRequest request) {
+    public void createPost(CreatePostRequest request, Long memberId) {
 
         Category category = Category.from(request.category());
-        Member member = memberRepository.findById(request.authorId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
         if (member.isDeleted()) {

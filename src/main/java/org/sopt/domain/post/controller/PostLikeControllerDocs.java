@@ -1,9 +1,11 @@
 package org.sopt.domain.post.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,7 +18,8 @@ public interface PostLikeControllerDocs {
     )
     ResponseEntity<ApiResponse<Void>> likePost(
             @PathVariable(name = "postId") Long postId,
-            @RequestParam(name = "memberId") Long memberId
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
     );
 
     @Operation(
@@ -25,6 +28,7 @@ public interface PostLikeControllerDocs {
     )
     ResponseEntity<ApiResponse<Void>> cancelPostLike(
             @PathVariable(name = "postId") Long postId,
-            @RequestParam(name = "memberId") Long memberId
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
     );
 }

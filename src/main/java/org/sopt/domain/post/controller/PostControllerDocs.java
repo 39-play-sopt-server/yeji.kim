@@ -1,12 +1,14 @@
 package org.sopt.domain.post.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.global.response.ApiResponse;
 import org.sopt.domain.post.dto.request.CreatePostRequest;
 import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.PostResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,8 +23,10 @@ public interface PostControllerDocs {
             description = "제목, 본문, 카테고리, 작성자를 입력받아 게시글을 작성합니다."
     )
     ResponseEntity<ApiResponse<Void>> createPost(
-            @RequestBody CreatePostRequest request
-    );
+            @RequestBody CreatePostRequest request,
+            @Parameter(hidden = true)
+            @AuthenticationPrincipal Long memberId
+            );
 
     @Operation(
             summary = "게시글 목록 조회",
