@@ -2,6 +2,7 @@ package org.sopt.domain.member.service;
 
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.repository.RefreshTokenRepository;
+import org.sopt.domain.auth.service.AuthService;
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.dto.request.CreateMemberRequest;
 import org.sopt.domain.member.exception.MemberNotFoundException;
@@ -15,13 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final AuthService authService;
 
     public Long createMember(CreateMemberRequest request) {
-        Member member = new Member(request.name(), request.email(), request.password());
-
-        memberRepository.save(member);
-
-        return member.getId();
+        return authService.signup(
+                request.name(),
+                request.email(),
+                request.password()
+        );
     }
 
     @Transactional
