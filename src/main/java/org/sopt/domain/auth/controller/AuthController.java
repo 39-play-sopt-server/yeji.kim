@@ -46,6 +46,26 @@ public class AuthController {
     ) {
         AuthTokens tokens = authService.login(request.email(), request.password());
 
+        return tokenResponse(tokens);
+    }
+
+    @GetMapping("/csrf")
+    public ResponseEntity<CsrfToken> csrf(CsrfToken csrfToken) {
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                .body(csrfToken);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<Void> refresh(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken
+    ) {
+        AuthTokens tokens = authService.refresh(refreshToken);
+
+        return tokenResponse(tokens);
+    }
+
+    private ResponseEntity<Void> tokenResponse(AuthTokens tokens) {
         ResponseCookie responseCookie = ResponseCookie
                 .from("refreshToken", tokens.refreshToken().value())
                 .httpOnly(true)
@@ -63,12 +83,5 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                 .header(HttpHeaders.CACHE_CONTROL, "no-store")
                 .build();
-    }
-
-    @GetMapping("/csrf")
-    public ResponseEntity<CsrfToken> csrf(CsrfToken csrfToken) {
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CACHE_CONTROL, "no-store")
-                .body(csrfToken);
     }
 }
