@@ -18,6 +18,7 @@ import org.sopt.global.security.jwt.JwtTokenType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 
@@ -88,6 +89,30 @@ public class AuthService {
         refreshTokenRepository.delete(storedToken);
 
         return issueTokens(member.getId());
+    }
+
+    @Transactional
+    public void logout(String token) {
+        if (!StringUtils.hasText(token)) {
+            return;
+        }
+
+        JwtTokenPayload payload;
+
+        try {
+            payload = jwtProvider.getPayload(token, JwtTokenType.REFRESH);
+        } catch (JwtException | IllegalArgumentException e) {
+            return;
+        }
+
+        refreshTokenRepository.findByTokenId(payload.tokenId())
+                .ifPresent(refreshToken -> {
+                    if (!refreshToken.getMemberId().equals(payload.memberId())) {
+                        throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+                    }
+
+                    refreshTokenRepository.delete(refreshToken);
+                });
     }
 
     private AuthTokens issueTokens(Long memberId) {
