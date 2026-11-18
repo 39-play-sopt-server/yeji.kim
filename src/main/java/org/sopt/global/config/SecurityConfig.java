@@ -1,5 +1,6 @@
 package org.sopt.global.config;
 
+import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.global.security.authentication.JwtAuthenticationFilter;
 import org.sopt.global.security.jwt.JwtProvider;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http,
+            MemberRepository memberRepository
+    ) throws Exception {
         CookieCsrfTokenRepository csrfRepository = new CookieCsrfTokenRepository();
 
         csrfRepository.setCookieCustomizer(cookie -> cookie
@@ -55,7 +59,7 @@ public class SecurityConfig {
                 .exceptionHandling(e -> e
                         .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 // JWT 인증 필터 추가
-                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtProvider, memberRepository),
                         UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
