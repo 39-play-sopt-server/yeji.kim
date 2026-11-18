@@ -18,6 +18,10 @@ public class Member {
 
     private boolean deleted = false;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MemberRole role = MemberRole.ROLE_USER;
+
     protected Member() {
     }
 
@@ -49,5 +53,9 @@ public class Member {
 
     public boolean isDeleted() {
         return this.deleted;
+    }
+
+    public MemberRole getRole() {
+        return this.role;
     }
 }

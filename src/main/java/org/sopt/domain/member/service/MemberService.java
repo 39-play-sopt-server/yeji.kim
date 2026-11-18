@@ -5,11 +5,14 @@ import org.sopt.domain.auth.repository.RefreshTokenRepository;
 import org.sopt.domain.auth.service.AuthService;
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.dto.request.CreateMemberRequest;
+import org.sopt.domain.member.dto.response.MemberResponse;
 import org.sopt.domain.member.exception.MemberNotFoundException;
 import org.sopt.domain.member.exception.MemberWithdrawnException;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -37,5 +40,12 @@ public class MemberService {
 
         member.withdraw();
         refreshTokenRepository.deleteByMemberId(memberId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<MemberResponse> getMembers() {
+        return memberRepository.findAll().stream()
+                .map(MemberResponse::from)
+                .toList();
     }
 }

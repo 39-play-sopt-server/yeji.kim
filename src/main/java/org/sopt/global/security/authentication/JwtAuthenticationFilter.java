@@ -7,12 +7,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.repository.AccessTokenBlacklistRepository;
+import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.global.security.jwt.JwtProvider;
 import org.sopt.global.security.jwt.JwtTokenPayload;
 import org.sopt.global.security.jwt.JwtTokenType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -41,13 +43,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 boolean blacklisted = accessTokenBlacklistRepository
                         .existByTokenId(payload.tokenId());
 
-                boolean activeMember = memberRepository
-                        .existsByIdAndDeletedFalse(payload.memberId());
+                Member member = memberRepository.findById(payload.memberId()).orElse(null);
 
-                if (!blacklisted && activeMember) {
-                    // 인증 완료된 Authentication 생성 후 SecurityContext에 저장
+                if (!blacklisted && member != null && !member.isDeleted()) {
+                    SimpleGrantedAuthority authority = new SimpleGrantedAuthority(member.getRole().name());
+
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(payload.memberId(), null, List.of());
+                            new UsernamePasswordAuthenticationToken(
+                                    member.getId(),
+                                    null,
+                                    List.of(authority)
+                            );
+
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     SecurityContextHolder.clearContext();

@@ -4,10 +4,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.sopt.domain.member.dto.request.CreateMemberRequest;
+import org.sopt.domain.member.dto.response.MemberResponse;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @Tag(name = "MEMBER", description = "회원 API")
 public interface MemberControllerDocs {
@@ -37,4 +40,10 @@ public interface MemberControllerDocs {
             @Parameter(hidden = true)
             @AuthenticationPrincipal Long memberId
     );
+
+    @Operation(
+            summary = "전체 회원 목록 조회",
+            description = "관리자만 전체 회원 목록을 조회할 수 있습니다."
+    )
+    ResponseEntity<ApiResponse<List<MemberResponse>>> getMembers();
 }
