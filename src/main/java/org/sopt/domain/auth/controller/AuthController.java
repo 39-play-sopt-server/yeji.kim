@@ -1,5 +1,6 @@
 package org.sopt.domain.auth.controller;
 
+import org.sopt.domain.auth.dto.AuthTokens;
 import org.sopt.domain.auth.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,7 +44,7 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(
             @RequestBody LoginRequest request
     ) {
-        String accessToken = authService.login(request.email(), request.password());
-        return ResponseEntity.ok(new LoginResponse(accessToken));
+        AuthTokens tokens = authService.login(request.email(), request.password());
+        return ResponseEntity.ok(new LoginResponse(tokens.accessToken().value()));
     }
 }
