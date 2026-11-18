@@ -1,8 +1,12 @@
 package org.sopt.domain.auth.service;
 
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.sopt.domain.auth.code.AuthErrorCode;
 import org.sopt.domain.auth.domain.entity.RefreshToken;
 import org.sopt.domain.auth.dto.AuthTokens;
+import org.sopt.domain.auth.exception.AuthValidationException;
+import org.sopt.domain.auth.exception.InvalidRefreshTokenException;
 import org.sopt.domain.auth.repository.RefreshTokenRepository;
 import org.sopt.domain.member.domain.entity.Member;
 import org.sopt.domain.member.exception.MemberWithdrawnException;
@@ -14,6 +18,8 @@ import org.sopt.global.security.jwt.JwtTokenType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +33,7 @@ public class AuthService {
     @Transactional
     public Long signup(String name, String email, String password) {
         if (memberRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("이미 가입된 이메일입니다.");
+            throw new AuthValidationException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
         Member member = new Member(name, email, passwordEncoder.encode(password));
@@ -37,18 +43,56 @@ public class AuthService {
     @Transactional
     public AuthTokens login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다."));
+                .orElseThrow(() -> new AuthValidationException(AuthErrorCode.INVALID_CREDENTIALS));
 
         if (!passwordEncoder.matches(password, member.getPassword())) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 올바르지 않습니다.");
+            throw new AuthValidationException(AuthErrorCode.INVALID_CREDENTIALS);
         }
 
         if (member.isDeleted()) {
             throw new MemberWithdrawnException();
         }
 
-        JwtToken accessToken = jwtProvider.createAccessToken(member.getId());
-        JwtToken refreshToken = jwtProvider.createRefreshToken(member.getId());
+        return issueTokens(member.getId());
+    }
+
+    @Transactional
+    public AuthTokens refresh(String token) {
+        JwtTokenPayload payload;
+
+        try {
+            payload = jwtProvider.getPayload(token, JwtTokenType.REFRESH);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        RefreshToken storedToken = refreshTokenRepository
+                .findByTokenId(payload.tokenId())
+                .orElseThrow(() -> new InvalidRefreshTokenException(
+                        AuthErrorCode.INVALID_REFRESH_TOKEN
+                ));
+
+        if (!storedToken.getMemberId().equals(payload.memberId()) || !storedToken.getExpiresAt().isAfter(Instant.now())) {
+            throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        Member member = memberRepository.findById(payload.memberId())
+                .orElseThrow(() -> new InvalidRefreshTokenException(
+                        AuthErrorCode.INVALID_REFRESH_TOKEN
+                ));
+
+        if (member.isDeleted()) {
+            throw new MemberWithdrawnException();
+        }
+
+        refreshTokenRepository.delete(storedToken);
+
+        return issueTokens(member.getId());
+    }
+
+    private AuthTokens issueTokens(Long memberId) {
+        JwtToken accessToken = jwtProvider.createAccessToken(memberId);
+        JwtToken refreshToken = jwtProvider.createRefreshToken(memberId);
 
         JwtTokenPayload payload = jwtProvider.getPayload(
                 refreshToken.value(),
