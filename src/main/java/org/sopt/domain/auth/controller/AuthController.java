@@ -1,5 +1,8 @@
 package org.sopt.domain.auth.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.sopt.domain.auth.dto.AuthTokens;
 import org.sopt.domain.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
@@ -21,15 +24,22 @@ public class AuthController {
         this.authService = authService;
     }
 
-    public record SignupRequest(String name, String email, String password) {
+    public record SignupRequest(
+            @NotBlank String name,
+            @NotBlank @Email String email,
+            @NotBlank String password
+    ) {
     }
 
-    public record LoginRequest(String email, String password) {
+    public record LoginRequest(
+            @NotBlank @Email String email,
+            @NotBlank String password
+    ) {
     }
 
     @PostMapping("/signup")
     public ResponseEntity<Long> signup(
-            @RequestBody SignupRequest request
+           @Valid @RequestBody SignupRequest request
     ) {
         return ResponseEntity.ok(
                 authService.signup(
@@ -42,7 +52,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Void> login(
-            @RequestBody LoginRequest request
+            @Valid @RequestBody LoginRequest request
     ) {
         AuthTokens tokens = authService.login(request.email(), request.password());
 
