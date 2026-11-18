@@ -6,8 +6,11 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.sopt.domain.auth.repository.AccessTokenBlacklistRepository;
 import org.sopt.domain.member.repository.MemberRepository;
 import org.sopt.global.security.jwt.JwtProvider;
+import org.sopt.global.security.jwt.JwtTokenPayload;
+import org.sopt.global.security.jwt.JwtTokenType;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtProvider jwtProvider;
     private final MemberRepository memberRepository;
+    private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -32,12 +36,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (token != null) {
             try {
-                Long memberId = jwtProvider.getMemberId(token);
+                JwtTokenPayload payload = jwtProvider.getPayload(token, JwtTokenType.ACCESS);
 
-                if (memberRepository.existsByIdAndDeletedFalse(memberId)) {
+                boolean blacklisted = accessTokenBlacklistRepository
+                        .existByTokenId(payload.tokenId());
+
+                boolean activeMember = memberRepository
+                        .existsByIdAndDeletedFalse(payload.memberId());
+
+                if (!blacklisted && activeMember) {
                     // 인증 완료된 Authentication 생성 후 SecurityContext에 저장
                     UsernamePasswordAuthenticationToken authentication =
-                            new UsernamePasswordAuthenticationToken(memberId, null, List.of());
+                            new UsernamePasswordAuthenticationToken(payload.memberId(), null, List.of());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 } else {
                     SecurityContextHolder.clearContext();
