@@ -2,11 +2,16 @@ package org.sopt.domain.auth.controller;
 
 import org.sopt.domain.auth.dto.AuthTokens;
 import org.sopt.domain.auth.service.AuthService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.Duration;
+import java.time.Instant;
 
 @RestController
 @RequestMapping("/auth")
@@ -24,9 +29,6 @@ public class AuthController {
     public record LoginRequest(String email, String password) {
     }
 
-    public record LoginResponse(String accessToken) {
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<Long> signup(
             @RequestBody SignupRequest request
@@ -41,10 +43,27 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(
+    public ResponseEntity<Void> login(
             @RequestBody LoginRequest request
     ) {
         AuthTokens tokens = authService.login(request.email(), request.password());
-        return ResponseEntity.ok(new LoginResponse(tokens.accessToken().value()));
+
+        ResponseCookie responseCookie = ResponseCookie
+                .from("refreshToken", tokens.refreshToken().value())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Strict")
+                .path("/auth")
+                .maxAge(Duration.between(Instant.now(), tokens.refreshToken().expiresAt()))
+                .build();
+
+        return ResponseEntity.ok()
+                .header(
+                        HttpHeaders.AUTHORIZATION,
+                        "Bearer " + tokens.accessToken().value()
+                )
+                .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
+                .header(HttpHeaders.CACHE_CONTROL, "no-store")
+                .build();
     }
 }
