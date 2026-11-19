@@ -6,6 +6,7 @@ import org.sopt.domain.auth.code.AuthErrorCode;
 import org.sopt.domain.auth.domain.entity.AccessTokenBlacklist;
 import org.sopt.domain.auth.domain.entity.RefreshToken;
 import org.sopt.domain.auth.dto.response.AuthTokensResponse;
+import org.sopt.domain.auth.dto.response.SocialMemberResponse;
 import org.sopt.domain.auth.exception.AuthValidationException;
 import org.sopt.domain.auth.exception.InvalidRefreshTokenException;
 import org.sopt.domain.auth.repository.AccessTokenBlacklistRepository;
@@ -17,12 +18,17 @@ import org.sopt.global.security.jwt.JwtProvider;
 import org.sopt.global.security.jwt.JwtToken;
 import org.sopt.global.security.jwt.JwtTokenPayload;
 import org.sopt.global.security.jwt.JwtTokenType;
+import org.sopt.global.security.oauth.SocialMemberMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +39,8 @@ public class AuthService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AccessTokenBlacklistRepository accessTokenBlacklistRepository;
+    private final SocialMemberService socialMemberService;
+    private final List<SocialMemberMapper> socialMemberMappers;
 
     @Transactional
     public Long signup(String name, String email, String password) {
@@ -115,6 +123,23 @@ public class AuthService {
         }
 
         revokeRefreshToken(refreshToken, payload.memberId());
+    }
+
+    @Transactional
+    public AuthTokensResponse socialLogin(
+            String registrationId,
+            Map<String, Object> attributes
+    ) {
+        SocialMemberMapper mapper = socialMemberMappers.stream()
+                .filter(candidate -> candidate.supports(registrationId))
+                .findFirst()
+                .orElseThrow(() -> new OAuth2AuthenticationException(new OAuth2Error("unsupported_provider")));
+
+        SocialMemberResponse memberResponse = mapper.map(attributes);
+
+        Long memberId = socialMemberService.findOrCreateMember(memberResponse);
+
+        return issueTokens(memberId);
     }
 
     private AuthTokensResponse issueTokens(Long memberId) {
