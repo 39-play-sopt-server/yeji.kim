@@ -49,7 +49,8 @@ public class AuthService {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthValidationException(AuthErrorCode.INVALID_CREDENTIALS));
 
-        if (!passwordEncoder.matches(password, member.getPassword())) {
+        if (member.getPassword() == null
+                || !passwordEncoder.matches(password, member.getPassword())) {
             throw new AuthValidationException(AuthErrorCode.INVALID_CREDENTIALS);
         }
 

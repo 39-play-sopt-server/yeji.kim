@@ -11,7 +11,7 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     private String name;
@@ -57,5 +57,9 @@ public class Member {
 
     public MemberRole getRole() {
         return this.role;
+    }
+
+    public static Member createSocialMember(String name, String email) {
+        return new Member(name, email, null);
     }
 }
