@@ -3,7 +3,7 @@ package org.sopt.domain.auth.service;
 import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.code.AuthErrorCode;
 import org.sopt.domain.auth.domain.entity.SocialAccount;
-import org.sopt.domain.auth.dto.response.SocialMemberInfo;
+import org.sopt.domain.auth.dto.response.SocialMemberResponse;
 import org.sopt.domain.auth.exception.AuthValidationException;
 import org.sopt.domain.auth.repository.SocialAccountRepository;
 import org.sopt.domain.member.domain.entity.Member;
@@ -20,7 +20,7 @@ public class SocialMemberService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Long findOrCreateMember(SocialMemberInfo memberInfo) {
+    public Long findOrCreateMember(SocialMemberResponse memberInfo) {
         return socialAccountRepository.findByProviderAndProviderId(
                         memberInfo.provider(),
                         memberInfo.providerId()
@@ -37,7 +37,7 @@ public class SocialMemberService {
                 .orElseGet(() -> createMember(memberInfo));
     }
 
-    private Long createMember(SocialMemberInfo memberInfo) {
+    private Long createMember(SocialMemberResponse memberInfo) {
         if (memberRepository.existsByEmail(memberInfo.email())) {
             throw new AuthValidationException(AuthErrorCode.EMAIL_ALREADY_EXISTS);
         }
