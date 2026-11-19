@@ -3,7 +3,7 @@ package org.sopt.domain.auth.controller;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import org.sopt.domain.auth.dto.AuthTokens;
+import org.sopt.domain.auth.dto.response.AuthTokensResponse;
 import org.sopt.domain.auth.service.AuthService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -54,7 +54,7 @@ public class AuthController {
     public ResponseEntity<Void> login(
             @Valid @RequestBody LoginRequest request
     ) {
-        AuthTokens tokens = authService.login(request.email(), request.password());
+        AuthTokensResponse tokens = authService.login(request.email(), request.password());
 
         return tokenResponse(tokens);
     }
@@ -70,7 +70,7 @@ public class AuthController {
     public ResponseEntity<Void> refresh(
             @CookieValue(name = "refreshToken", required = false) String refreshToken
     ) {
-        AuthTokens tokens = authService.refresh(refreshToken);
+        AuthTokensResponse tokens = authService.refresh(refreshToken);
 
         return tokenResponse(tokens);
     }
@@ -109,7 +109,7 @@ public class AuthController {
                 .build();
     }
 
-    private ResponseEntity<Void> tokenResponse(AuthTokens tokens) {
+    private ResponseEntity<Void> tokenResponse(AuthTokensResponse tokens) {
         ResponseCookie responseCookie = ResponseCookie
                 .from("refreshToken", tokens.refreshToken().value())
                 .httpOnly(true)

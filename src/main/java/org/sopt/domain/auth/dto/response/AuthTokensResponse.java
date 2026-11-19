@@ -1,8 +1,8 @@
-package org.sopt.domain.auth.dto;
+package org.sopt.domain.auth.dto.response;
 
 import org.sopt.global.security.jwt.JwtToken;
 
-public record AuthTokens(
+public record AuthTokensResponse(
         JwtToken accessToken,
         JwtToken refreshToken
 ) {

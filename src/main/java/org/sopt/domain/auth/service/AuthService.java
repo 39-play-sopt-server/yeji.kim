@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.sopt.domain.auth.code.AuthErrorCode;
 import org.sopt.domain.auth.domain.entity.AccessTokenBlacklist;
 import org.sopt.domain.auth.domain.entity.RefreshToken;
-import org.sopt.domain.auth.dto.AuthTokens;
+import org.sopt.domain.auth.dto.response.AuthTokensResponse;
 import org.sopt.domain.auth.exception.AuthValidationException;
 import org.sopt.domain.auth.exception.InvalidRefreshTokenException;
 import org.sopt.domain.auth.repository.AccessTokenBlacklistRepository;
@@ -45,7 +45,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthTokens login(String email, String password) {
+    public AuthTokensResponse login(String email, String password) {
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() -> new AuthValidationException(AuthErrorCode.INVALID_CREDENTIALS));
 
@@ -62,7 +62,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthTokens refresh(String token) {
+    public AuthTokensResponse refresh(String token) {
         JwtTokenPayload payload;
 
         try {
@@ -117,7 +117,7 @@ public class AuthService {
         revokeRefreshToken(refreshToken, payload.memberId());
     }
 
-    private AuthTokens issueTokens(Long memberId) {
+    private AuthTokensResponse issueTokens(Long memberId) {
         JwtToken accessToken = jwtProvider.createAccessToken(memberId);
         JwtToken refreshToken = jwtProvider.createRefreshToken(memberId);
 
@@ -134,7 +134,7 @@ public class AuthService {
                 )
         );
 
-        return new AuthTokens(accessToken, refreshToken);
+        return new AuthTokensResponse(accessToken, refreshToken);
     }
 
     private void revokeRefreshToken(String token, Long memberId) {
