@@ -4,6 +4,10 @@ app:
       - "http://localhost:5173"
 
 spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
   application:
     name: assignment
 
