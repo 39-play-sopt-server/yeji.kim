@@ -18,7 +18,7 @@ services:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
 
   redis:
-    image: redis:7.4
+    image: redis:8.0
     command: [ "redis-server", "--appendonly", "yes" ]
     ports:
       - "127.0.0.1:6379:6379"

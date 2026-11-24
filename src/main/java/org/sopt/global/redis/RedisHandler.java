@@ -1,12 +1,14 @@
 package org.sopt.global.redis;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.connection.RedisHashCommands;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Component
@@ -23,20 +25,6 @@ public class RedisHandler {
     // 존재 여부 확인
     public boolean exists(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-    }
-
-    // 값 조회
-    public Optional<String> get(String key) {
-        return Optional.ofNullable(
-                redisTemplate.opsForValue().get(key)
-        );
-    }
-
-    // 값을 반환하면서 삭제
-    public Optional<String> getAndDelete(String key) {
-        return Optional.ofNullable(
-                redisTemplate.opsForValue().getAndDelete(key)
-        );
     }
 
     // 키 삭제
@@ -57,12 +45,11 @@ public class RedisHandler {
             throw new IllegalArgumentException("TTL은 0밀리초보다 커야 합니다.");
         }
 
-        redisTemplate.execute(
-                HASH_SET_WITH_TTL,
-                List.of(key),
-                field,
-                value,
-                Long.toString(ttlMillis)
+        redisTemplate.<String, String>opsForHash().putAndExpire(
+                key,
+                Map.of(field, value),
+                RedisHashCommands.HashFieldSetOption.UPSERT,
+                Expiration.from(ttl)
         );
     }
 
@@ -75,33 +62,19 @@ public class RedisHandler {
 
     // Hash 항목을 조회하면서 삭제
     public Optional<String> hashGetAndDelete(String key, String field) {
-        return Optional.ofNullable(
-                redisTemplate.execute(
-                        HASH_GET_AND_DELETE,
-                        List.of(key),
-                        field
-                )
-        );
+        List<String> values = redisTemplate
+                .<String, String>opsForHash()
+                .getAndDelete(key, List.of(field));
+
+        if (values == null || values.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(values.get(0));
     }
 
     // Hash 항목 삭제
     public void hashDelete(String key, String field) {
         redisTemplate.opsForHash().delete(key, field);
     }
-
-    private static final DefaultRedisScript<Long> HASH_SET_WITH_TTL =
-            new DefaultRedisScript<>("""
-                    redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
-                    redis.call('HPEXPIRE', KEYS[1], ARGV[3], 'FIELDS', 1, ARGV[1])
-                    return 1
-                    """, Long.class);
-
-    private static final DefaultRedisScript<String> HASH_GET_AND_DELETE =
-            new DefaultRedisScript<>("""
-                    local value = redis.call('HGET', KEYS[1], ARGV[1])
-                    if value then
-                        redis.call('HDEL', KEYS[1], ARGV[1])
-                    end
-                    return value
-                    """, String.class);
 }
