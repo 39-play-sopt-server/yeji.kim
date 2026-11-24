@@ -8,6 +8,7 @@ import org.sopt.domain.post.dto.request.UpdatePostRequest;
 import org.sopt.domain.post.dto.response.PostResponse;
 import org.sopt.domain.post.service.PostService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +27,10 @@ public class PostController implements PostControllerDocs {
     @PostMapping
     @Override
     public ResponseEntity<ApiResponse<Void>> createPost(
-            @Valid @RequestBody CreatePostRequest request
+            @Valid @RequestBody CreatePostRequest request,
+            @AuthenticationPrincipal Long memberId
     ) {
-        postService.createPost(request);
+        postService.createPost(request, memberId);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_CREATED, null);
     }
 
@@ -59,18 +61,20 @@ public class PostController implements PostControllerDocs {
     @Override
     public ResponseEntity<ApiResponse<Void>> updatePost(
             @RequestBody UpdatePostRequest request,
-            @PathVariable(name = "postId") Long postId
+            @PathVariable(name = "postId") Long postId,
+            @AuthenticationPrincipal Long memberId
     ) {
-        postService.updatePost(postId, request);
+        postService.updatePost(postId, request, memberId);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_UPDATED, null);
     }
 
     @DeleteMapping(path = "/{postId}")
     @Override
     public ResponseEntity<ApiResponse<Void>> deletePost(
-            @PathVariable(name = "postId") Long postId
+            @PathVariable(name = "postId") Long postId,
+            @AuthenticationPrincipal Long memberId
     ) {
-        postService.deletePost(postId);
+        postService.deletePost(postId, memberId);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_DELETED, null);
     }
 }

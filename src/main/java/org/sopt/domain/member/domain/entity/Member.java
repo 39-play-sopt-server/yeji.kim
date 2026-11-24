@@ -11,12 +11,16 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     private String name;
 
     private boolean deleted = false;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private MemberRole role = MemberRole.ROLE_USER;
 
     protected Member() {
     }
@@ -49,5 +53,13 @@ public class Member {
 
     public boolean isDeleted() {
         return this.deleted;
+    }
+
+    public MemberRole getRole() {
+        return this.role;
+    }
+
+    public static Member createSocialMember(String name, String email) {
+        return new Member(name, email, null);
     }
 }

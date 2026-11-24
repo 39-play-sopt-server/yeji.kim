@@ -4,6 +4,7 @@ import org.sopt.domain.post.code.PostSuccessCode;
 import org.sopt.domain.post.service.PostLikeService;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +20,7 @@ public class PostLikeController implements PostLikeControllerDocs{
     @Override
     public ResponseEntity<ApiResponse<Void>> likePost(
             @PathVariable(name = "postId") Long postId,
-            @RequestParam(name = "memberId") Long memberId
+            @AuthenticationPrincipal Long memberId
     ) {
         postLikeService.likePost(postId, memberId);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIKED, null);
@@ -29,7 +30,7 @@ public class PostLikeController implements PostLikeControllerDocs{
     @Override
     public ResponseEntity<ApiResponse<Void>> cancelPostLike(
             @PathVariable(name = "postId") Long postId,
-            @RequestParam(name = "memberId") Long memberId
+            @AuthenticationPrincipal Long memberId
     ) {
         postLikeService.cancelPostLike(postId, memberId);
         return ApiResponse.toResponseEntity(PostSuccessCode.POST_LIKE_CANCELED, null);

@@ -5,7 +5,8 @@ import org.springframework.http.HttpStatus;
 
 public enum MemberSuccessCode implements SuccessBaseCode {
     MEMBER_CREATED(HttpStatus.CREATED, "회원이 생성되었습니다."),
-    MEMBER_DELETED(HttpStatus.OK, "회원이 삭제되었습니다.");
+    MEMBER_DELETED(HttpStatus.OK, "회원이 삭제되었습니다."),
+    MEMBER_LIST_READ(HttpStatus.OK, "회원 목록을 조회했습니다.");
 
     private final HttpStatus httpStatus;
     private final String message;

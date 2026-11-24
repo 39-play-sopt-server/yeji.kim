@@ -46,10 +46,10 @@ public class PostService {
     }
 
     @Transactional
-    public void createPost(CreatePostRequest request) {
+    public void createPost(CreatePostRequest request, Long memberId) {
 
         Category category = Category.from(request.category());
-        Member member = memberRepository.findById(request.authorId())
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
 
         if (member.isDeleted()) {
@@ -146,9 +146,11 @@ public class PostService {
             maxRetries = 3,
             delay = 50
     )
-    public void updatePost(Long id, UpdatePostRequest request) {
+    public void updatePost(Long id, UpdatePostRequest request, Long memberId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
+
+        validateAuthor(post, memberId);
 
         post.update(request.title(), request.content());
     }
@@ -162,12 +164,20 @@ public class PostService {
             maxRetries = 3,
             delay = 50
     )
-    public void deletePost(Long id) {
+    public void deletePost(Long id, Long memberId) {
         Post post = postRepository.findById(id)
                 .orElseThrow(PostNotFoundException::new);
+
+        validateAuthor(post, memberId);
 
         postLikeRepository.deleteByPostId(id);
         postLikeRepository.flush();
         postRepository.delete(post);
+    }
+
+    private void validateAuthor(Post post, Long memberId) {
+        if (!post.getAuthor().getId().equals(memberId)) {
+            throw new PostValidationException(PostErrorCode.POST_FORBIDDEN);
+        }
     }
 }

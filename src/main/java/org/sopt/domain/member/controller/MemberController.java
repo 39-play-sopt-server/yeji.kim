@@ -3,11 +3,14 @@ package org.sopt.domain.member.controller;
 import jakarta.validation.Valid;
 import org.sopt.domain.member.code.MemberSuccessCode;
 import org.sopt.domain.member.dto.request.CreateMemberRequest;
+import org.sopt.domain.member.dto.response.MemberResponse;
 import org.sopt.domain.member.service.MemberService;
 import org.sopt.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/v1/members")
@@ -28,9 +31,9 @@ public class MemberController implements MemberControllerDocs {
     }
 
     @Override
-    @DeleteMapping("/{memberId}")
+    @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> deleteMember(
-            @PathVariable(name = "memberId") Long memberId
+            @AuthenticationPrincipal Long memberId
     ) {
         memberService.deleteMember(memberId);
         return ApiResponse.toResponseEntity(MemberSuccessCode.MEMBER_DELETED, null);
@@ -42,5 +45,14 @@ public class MemberController implements MemberControllerDocs {
             @AuthenticationPrincipal Long memberId
     ) {
         return ResponseEntity.ok(memberId);
+    }
+
+    @Override
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<MemberResponse>>> getMembers() {
+        return ApiResponse.toResponseEntity(
+                MemberSuccessCode.MEMBER_LIST_READ,
+                memberService.getMembers()
+        );
     }
 }
