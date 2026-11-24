@@ -80,12 +80,15 @@ public class AuthService {
         }
 
         RefreshToken storedToken = refreshTokenRepository
-                .findByTokenId(payload.tokenId())
+                .findByMemberIdAndTokenId(
+                        payload.memberId(),
+                        payload.tokenId()
+                )
                 .orElseThrow(() -> new InvalidRefreshTokenException(
                         AuthErrorCode.INVALID_REFRESH_TOKEN
                 ));
 
-        if (!storedToken.getMemberId().equals(payload.memberId()) || !storedToken.getExpiresAt().isAfter(Instant.now())) {
+        if (!storedToken.memberId().equals(payload.memberId()) || !storedToken.expiresAt().isAfter(Instant.now())) {
             throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
@@ -98,7 +101,12 @@ public class AuthService {
             throw new MemberWithdrawnException();
         }
 
-        refreshTokenRepository.delete(storedToken);
+        refreshTokenRepository.findAndDelete(
+                payload.memberId(),
+                payload.tokenId()
+        ).orElseThrow(() -> new InvalidRefreshTokenException(
+                AuthErrorCode.INVALID_REFRESH_TOKEN
+        ));
 
         return issueTokens(member.getId());
     }
@@ -179,9 +187,12 @@ public class AuthService {
             throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
         }
 
-        refreshTokenRepository.findByTokenId(payload.tokenId())
+        refreshTokenRepository.findByMemberIdAndTokenId(
+                        payload.memberId(),
+                        payload.tokenId()
+                )
                 .ifPresent(refreshToken -> {
-                    if (!refreshToken.getMemberId().equals(memberId)) {
+                    if (!refreshToken.memberId().equals(memberId)) {
                         throw new InvalidRefreshTokenException(AuthErrorCode.INVALID_REFRESH_TOKEN);
                     }
 

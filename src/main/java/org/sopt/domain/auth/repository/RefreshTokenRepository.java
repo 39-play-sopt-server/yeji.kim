@@ -7,7 +7,12 @@ import java.util.Optional;
 public interface RefreshTokenRepository {
     RefreshToken save(RefreshToken refreshToken);
 
-    Optional<RefreshToken> findByTokenId(String tokenId);
+    Optional<RefreshToken> findByMemberIdAndTokenId(
+            Long memberId,
+            String tokenId
+    );
+
+    Optional<RefreshToken> findAndDelete(Long memberId, String tokenId);
 
     void delete(RefreshToken refreshToken);
 
